@@ -18,28 +18,39 @@ class PlayState extends FlxState
 	private var _level : Level;
 	private var _gi : GameInterface;
 	
+	private var _startPlayers : Array<String>;
+	
+	public function new ()
+	{
+		super();
+		_startPlayers = new Array<String>();
+	}
+	
+	public function addPlayer(name : String)
+	{
+		_startPlayers.push(name);
+	}
+	
+	
 	override public function create():Void
 	{
 		super.create();
-	
-		_players = new FlxTypedGroup<Player> ();
-		
-		var p0 : Player = new Player();
-		p0.setState(this, new InputKeyboard1(), 0);
-		_players.add(p0);
-		
-		var p1 : Player = new Player();
-		p1.setState(this, new InputKeyboard2(), 1);
-		_players.add(p1);
-
-		var p3 : Player = new Player();
-		p3.setState(this, new GPInput(0), 2);
-		_players.add(p3);
 		
 		_level = new Level();
 
-		var playersList:Array<Player> = [p0,p1,p3];
-		_gi = new GameInterface(playersList);
+		_players = new FlxTypedGroup<Player> ();
+		var _playersArray = new Array<Player> ();
+
+		for (i in 0 ... _startPlayers.length)
+		{
+			var p : Player = new Player();
+			p.setState(this, String2BasicInput.get(_startPlayers[i]), i);
+			_players.add(p);
+			_playersArray.push(p);
+		}
+		
+		_gi = new GameInterface(_playersArray);
+		_level = new Level();
 	}
 
 	override public function update(elapsed:Float):Void

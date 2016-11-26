@@ -16,8 +16,9 @@ private var barPositions : Array<Array<Float>> = [
     [FlxG.width - horizScreenDistance, FlxG.height - vertScreenDistance],
     [horizScreenDistance, FlxG.height - vertScreenDistance]
     ];
-    private var _healthBars : FlxTypedGroup<PlayerHudBar>;
-    public function new(playerList : Array<Player>)
+private var _healthBars : FlxTypedGroup<PlayerHudBar>;
+
+public function new(playerList : Array<Player>)
     {
         _healthBars = new FlxTypedGroup<PlayerHudBar>();
         for (pNum in 0 ... playerList.length)
