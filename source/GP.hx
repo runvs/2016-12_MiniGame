@@ -15,6 +15,22 @@ class GP
 {
     public static var ScreenWidth (default, null) : Int = 800;
     public static var ScreenHeight (default, null) : Int = 600;
+
+    
+    // fontSize: returns 128 / 2^i 
+    // -> fontSize(0) is the defined as biggest font (128)
+    // -> fontSize(7) is defined as smallest font (16)
+    static public function fontSize(size:Int):Int {
+        // in case of invalid inputs, return the default size
+        if (size < 0 || size > 8) {
+            return 128;
+        }
+         
+        var i : Int  = 128 - size * 16;
+        //trace('$i');
+        return i;
+    }
+	
 	
 	public static var PlayerAccelerationFactor (default, null) : Float = 950;
 	static public var PlayerDrag (default, null) : Float = 1000;
@@ -24,6 +40,5 @@ class GP
 	static public var PlayerShootCoolDown (default, null) : Float = 0.3;
 	static public var PlayerDamageTrackIncrease ( default, null) : Float = 5;
 	static public var ShotVelocity (default, null) : Float =  550;
-	
 	
 }

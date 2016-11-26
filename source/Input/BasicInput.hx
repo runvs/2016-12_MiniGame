@@ -10,10 +10,9 @@ class BasicInput
 	public var yVal : Float = 0;
 	
 	public var anyPressed :Bool = false;
-	
+    public var name (default, null) : String = "";
 	public var xShootVal : Float = 0;
 	public var yShootVal : Float = 0;
-
 	public function update(elapsed: Float) : Void 
 	{
 		// reset the values

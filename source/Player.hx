@@ -183,6 +183,11 @@ class Player extends FlxSprite
 		this.elasticity = _damageTrack / 50;
 	}
 	
+	public function getDamageTrack()
+	{
+		return this._damageTrack;
+	}
+
 	public function hit ()
 	{
 		_damageTrack += GP.PlayerDamageTrackIncrease;

@@ -16,6 +16,7 @@ class PlayState extends FlxState
 
 	private var _players : FlxTypedGroup<Player>;
 	private var _level : Level;
+	private var _gi : GameInterface;
 	
 	override public function create():Void
 	{
@@ -36,6 +37,11 @@ class PlayState extends FlxState
 		_players.add(p3);
 		
 		_level = new Level();
+
+		_gi = new GameInterface();
+		_gi.addPlayer(p0, 750.0,  80.0);
+		_gi.addPlayer(p1,  50.0,  80.0);
+		_gi.addPlayer(p3, 750.0, 520.0);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -68,6 +74,7 @@ class PlayState extends FlxState
 				}
 			}
 		}
+		_gi.update(elapsed);
 	}
 	
 	override public function draw () : Void 
@@ -78,6 +85,7 @@ class PlayState extends FlxState
 			p.draw();
 		}
 		_level._shots.draw();
+		_gi.draw();
 	}
 	
 	public function spawnShot ( s : Shot) : Void 
