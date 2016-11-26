@@ -29,9 +29,9 @@ class Player extends FlxSprite
 		
 		this.animation.play("idle");
 		
-		
 		this.drag.set(GP.PlayerDrag, GP.PlayerDrag);
 		this.maxVelocity.set(GP.PlayerMaxVelocity, GP.PlayerMaxVelocity);
+		this.elasticity = 0.5;
 		
 	}
 	
@@ -50,6 +50,19 @@ class Player extends FlxSprite
 	function colorPlayer() 
 	{
 		// todo
+		
+		//this.pixels.lock();
+		for (i in 0 ... this.pixels.width)
+		{
+			for (j in 0... this.pixels.height)
+			{
+				if (this.pixels.getPixel32(i, j) == FlxColor.fromRGB(128, 128, 128))
+				{
+					this.pixels.setPixel32(i, j, GP.PCols.get(_ID));
+				}
+			}
+		}
+		//this.pixels.unlock();
 	}
 	
 	

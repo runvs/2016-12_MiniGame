@@ -20,5 +20,7 @@ class GP
 	static public var PlayerDrag (default, null) : Float = 600;
 	static public var PlayerMaxVelocity (default, null) : Float = 300;
 	
+	static public var PCols (default, default) : PlayerColors;
+	
 	
 }

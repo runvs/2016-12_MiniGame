@@ -20,6 +20,7 @@ class MenuState extends FlxState
 	{
 		super.create();
 		FlxG.mouse.visible = false;
+		GP.PCols = new PlayerColors();
 		//_startText = new FlxText( 100, 100, 0, "pushover, press Space to start", 16);
         // contains the "player<x>: press A to join" messages
         //_playerText = new Array<String>();
