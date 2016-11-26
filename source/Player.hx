@@ -20,7 +20,13 @@ class Player extends FlxSprite
 	{
 		super();
 		
-		this.makeGraphic(32, 16, FlxColor.WHITE);
+		//this.makeGraphic(32, 16, FlxColor.WHITE);
+		this.loadGraphic(AssetPaths.gfx_char_sheet__png, true, 50, 45, true);
+		this.animation.add("idle", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 6);
+		this.animation.add("walk", [2, 3], 6);
+		this.animation.add("hit", [4], 5);
+		
+		this.animation.play("idle");
 		
 	}
 	
@@ -41,6 +47,15 @@ class Player extends FlxSprite
 		
 		this.acceleration.x = _input.xVal;
 		this.acceleration.y = _input.yVal;
+		
+		if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
+		{
+			this.animation.play("walk");
+		}
+		else
+		{
+			this.animation.play("idle");
+		}
 		
 		
 		
