@@ -20,13 +20,17 @@ class Player extends FlxSprite
 	{
 		super();
 		
-		//this.makeGraphic(32, 16, FlxColor.WHITE);
+		/// graphic stuff 
 		this.loadGraphic(AssetPaths.gfx_char_sheet__png, true, 50, 45, true);
 		this.animation.add("idle", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 6);
 		this.animation.add("walk", [2, 3], 6);
 		this.animation.add("hit", [4], 5);
 		
 		this.animation.play("idle");
+		
+		
+		this.drag.set(GP.PlayerDrag, GP.PlayerDrag);
+		this.maxVelocity.set(GP.PlayerMaxVelocity, GP.PlayerMaxVelocity);
 		
 	}
 	
@@ -43,10 +47,10 @@ class Player extends FlxSprite
 		
 		_input.update(elapsed);
 		
-		this.angle = Math.atan2(_input.yVal, _input.xVal).Rad2Deg();
+		this.angle = - 90 +  Math.atan2(_input.yVal, _input.xVal).Rad2Deg();
 		
-		this.acceleration.x = _input.xVal;
-		this.acceleration.y = _input.yVal;
+		this.acceleration.x = _input.xVal * GP.PlayerAccelerationFactor;
+		this.acceleration.y = _input.yVal * GP.PlayerAccelerationFactor;
 		
 		if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
 		{
