@@ -95,7 +95,7 @@ class Player extends FlxSprite
 		this.acceleration.x = _input.xVal * GP.PlayerAccelerationFactor;
 		this.acceleration.y = _input.yVal * GP.PlayerAccelerationFactor;
 		
-		if (_input.shoot)
+		if (Math.abs(_input.xShootVal) > 0.5 || Math.abs(_input.yShootVal) > 0.5 )
 		{
 			if (_shootTimer <= 0 )
 			{
@@ -125,7 +125,9 @@ class Player extends FlxSprite
 		s.x = x;
 		s.y = y;
 		
-		s.velocity.x = 100;
+		s.velocity.x = GP.ShotVelocity * _input.xShootVal;
+		s.velocity.y = GP.ShotVelocity * _input.yShootVal;
+		
 		s.firedBy = _ID;
 		_state.spawnShot(s);
 		this._shootTimer = GP.PlayerShootCoolDown;

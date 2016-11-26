@@ -21,8 +21,9 @@ class GP
 	static public var PlayerMaxVelocity (default, null) : Float = 300;
 	
 	static public var PCols (default, default) : PlayerColors;
-	static public var PlayerShootCoolDown (default, null) : Float = 0.2;
+	static public var PlayerShootCoolDown (default, null) : Float = 0.3;
 	static public var PlayerDamageTrackIncrease ( default, null) : Float = 5;
+	static public var ShotVelocity (default, null) : Float =  350;
 	
 	
 }

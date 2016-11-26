@@ -26,10 +26,14 @@ class GPInput extends BasicInput
 		xVal = _gamepad.getXAxis(FlxGamepadInputID.LEFT_ANALOG_STICK);
 		yVal = _gamepad.getYAxis(FlxGamepadInputID.LEFT_ANALOG_STICK);
 		
-		shoot = _gamepad.justPressed.RIGHT_TRIGGER;
-		if (xVal != 0 || yVal != 0 || shoot )
+		xShootVal = _gamepad.getXAxis(FlxGamepadInputID.RIGHT_ANALOG_STICK);
+		yShootVal = _gamepad.getYAxis(FlxGamepadInputID.RIGHT_ANALOG_STICK);
+		
+		if (xVal != 0 || yVal != 0)
 		{
 			anyPressed = true;
 		}
+		
+		
 	}
 }
