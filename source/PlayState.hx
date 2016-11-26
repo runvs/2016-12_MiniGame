@@ -10,7 +10,9 @@ import flixel.util.FlxColor;
 
 class PlayState extends FlxState
 {
-	//private var _spr : FlxSprite;
+	private var _spr : FlxSprite;
+	
+	private var _p1 : Player;
 	
 	override public function create():Void
 	{
@@ -20,6 +22,10 @@ class PlayState extends FlxState
 		_spr = new FlxSprite();
 		_spr.makeGraphic(32, 32, FlxColor.WHITE);
 		add(_spr);
+		
+		_p1 = new Player();
+		_p1.setState(this, new InputKeyboard());
+		add(_p1);
 		
 		_spr.pixels.setPixel32(15, 15, FlxColor.BLUE);
 	}
