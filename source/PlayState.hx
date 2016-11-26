@@ -17,14 +17,14 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		super.create();
-		FlxG.camera.bgColor = FlxColor.RED;
+		//FlxG.camera.bgColor = FlxColor.RED;
 		
 		_spr = new FlxSprite();
 		_spr.makeGraphic(32, 32, FlxColor.WHITE);
 		add(_spr);
 		
 		_p1 = new Player();
-		_p1.setState(this, new InputKeyboard());
+		_p1.setState(this, new InputKeyboard(), 0);
 		add(_p1);
 		
 		_spr.pixels.setPixel32(15, 15, FlxColor.BLUE);

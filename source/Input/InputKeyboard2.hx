@@ -5,7 +5,7 @@ import flixel.FlxG;
  * ...
  * @author 
  */
-class InputKeyboard extends BasicInput
+class InputKeyboard1 extends BasicInput
 {
 	
 	public function new() 
@@ -18,21 +18,24 @@ class InputKeyboard extends BasicInput
 		super.update(elapsed);
 		if (FlxG.keys.pressed.LEFT)
 		{
-			trace("left");
 			xVal = -1;
+			anyPressed = true;
 		}
 		if (FlxG.keys.pressed.RIGHT)
 		{
 			xVal = 1;
+			anyPressed = true;
 		}
 		
 		if (FlxG.keys.pressed.UP)
 		{
 			yVal = -1;
+			anyPressed = true;
 		}
 		if (FlxG.keys.pressed.DOWN)
 		{
 			yVal = 1;
+			anyPressed = true;
 		}
 	}
 	

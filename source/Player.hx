@@ -14,11 +14,12 @@ class Player extends FlxSprite
 
 	private var _state : PlayState = null;
 	private var _input : BasicInput = null;
-	
+	public var _ID : Int = 0;
 	
 	public function new() 
 	{
 		super();
+		
 		
 		/// graphic stuff 
 		this.loadGraphic(AssetPaths.gfx_char_sheet__png, true, 50, 45, true);
@@ -34,10 +35,11 @@ class Player extends FlxSprite
 		
 	}
 	
-	public function setState ( state : PlayState, input : BasicInput)
+	public function setState ( state : PlayState, input : BasicInput, id)
 	{
 		_state = state;
 		_input = input;
+		_ID = id;
 	}
 	
 	
