@@ -8,6 +8,8 @@ class BasicInput
 {
 	public var xVal : Float = 0;
 	public var yVal : Float = 0;
+
+	public var shoot : Bool = false;
 	
 	public var anyPressed :Bool = false;
 
@@ -17,6 +19,7 @@ class BasicInput
 		xVal = 0;
 		yVal = 0;
 		anyPressed = false;
+		shoot = false;
 
 	}
 }

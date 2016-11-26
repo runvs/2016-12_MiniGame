@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
@@ -14,6 +15,7 @@ class PlayState extends FlxState
 {
 
 	private var _players : FlxTypedGroup<Player>;
+	private var _level : Level;
 	
 	override public function create():Void
 	{
@@ -29,10 +31,17 @@ class PlayState extends FlxState
 		p1.setState(this, new InputKeyboard2(), 1);
 		_players.add(p1);
 
+		var p3 : Player = new Player();
+		p3.setState(this, new GPInput(0), 2);
+		_players.add(p3);
+		
+		_level = new Level();
 	}
 
 	override public function update(elapsed:Float):Void
 	{
+		_level.cleanShots();
+		
 		super.update(elapsed);
 		
 		FlxG.collide(_players, _players);
@@ -40,6 +49,24 @@ class PlayState extends FlxState
 		for (p in _players)
 		{
 			p.update(elapsed);
+		}
+		_level._shots.update(elapsed);
+		
+		for (p in _players)
+		{
+			for (s in _level._shots)
+			{
+				if (s.alive == false) continue;
+				if (s.firedBy == p._ID) continue;
+				
+
+				if ( FlxG.overlap(p, s))
+				{
+					FlxObject.separate(p, s);
+					s.alive = false;
+					p.hit();
+				}
+			}
 		}
 	}
 	
@@ -50,5 +77,12 @@ class PlayState extends FlxState
 		{
 			p.draw();
 		}
+		_level._shots.draw();
 	}
+	
+	public function spawnShot ( s : Shot) : Void 
+	{
+		_level._shots.add(s);
+	}
+	
 }

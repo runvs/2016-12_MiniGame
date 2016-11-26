@@ -16,6 +16,12 @@ class Player extends FlxSprite
 	private var _input : BasicInput = null;
 	public var _ID : Int = 0;
 	
+	public var _damageTrack : Float;
+	
+	private var _shootTimer : Float = 0;
+
+	
+	
 	public function new() 
 	{
 		super();
@@ -29,9 +35,13 @@ class Player extends FlxSprite
 		
 		this.animation.play("idle");
 		
+		
+		// movement stuff
 		this.drag.set(GP.PlayerDrag, GP.PlayerDrag);
 		this.maxVelocity.set(GP.PlayerMaxVelocity, GP.PlayerMaxVelocity);
-		this.elasticity = 0.5;
+		this.elasticity = 0.0;
+		
+		_damageTrack = 0;
 		
 	}
 	
@@ -42,8 +52,7 @@ class Player extends FlxSprite
 		_ID = id;
 		
 		this.x += id * 100;
-		//this.mass =  1.0 / (id + 1);
-		//trace(this.mass);
+
 		colorPlayer();
 	}
 	
@@ -51,7 +60,7 @@ class Player extends FlxSprite
 	{
 		// todo
 		
-		//this.pixels.lock();
+		this.pixels.lock();
 		for (i in 0 ... this.pixels.width)
 		{
 			for (j in 0... this.pixels.height)
@@ -62,12 +71,21 @@ class Player extends FlxSprite
 				}
 			}
 		}
-		//this.pixels.unlock();
+		this.pixels.unlock();
 	}
 	
 	
 	override public function update(elapsed:Float):Void 
 	{
+		
+		if (_shootTimer > 0)
+		{
+			_shootTimer -= elapsed;
+		}
+		
+		
+		calculateElasticity();
+		
 		this.acceleration.x = this.acceleration.y = 0;
 		
 		_input.update(elapsed);
@@ -76,6 +94,15 @@ class Player extends FlxSprite
 		
 		this.acceleration.x = _input.xVal * GP.PlayerAccelerationFactor;
 		this.acceleration.y = _input.yVal * GP.PlayerAccelerationFactor;
+		
+		if (_input.shoot)
+		{
+			if (_shootTimer <= 0 )
+			{
+				shoot();
+			}
+		}
+		
 		
 		if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
 		{
@@ -86,12 +113,33 @@ class Player extends FlxSprite
 			this.animation.play("idle");
 		}
 		
-		
-		
 		super.update(elapsed);
 		 
 		//trace(this.acceleration);
 
+	}
+	
+	function shoot() 
+	{
+		var s : Shot = new Shot();
+		s.x = x;
+		s.y = y;
+		
+		s.velocity.x = 100;
+		s.firedBy = _ID;
+		_state.spawnShot(s);
+		this._shootTimer = GP.PlayerShootCoolDown;
+		
+	}
+	
+	function calculateElasticity() 
+	{
+		this.elasticity = _damageTrack / 50;
+	}
+	
+	public function hit ()
+	{
+		_damageTrack += GP.PlayerDamageTrackIncrease;
 	}
 	
 	override public function draw():Void 

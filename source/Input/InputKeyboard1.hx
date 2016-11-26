@@ -37,6 +37,11 @@ class InputKeyboard1 extends BasicInput
 			yVal = 1;
 			anyPressed = true;
 		}
+		if (FlxG.keys.pressed.TAB)
+		{
+			shoot = true;
+			anyPressed = true;
+		}
 	}
 	
 }

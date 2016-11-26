@@ -7,7 +7,7 @@ import flixel.input.gamepad.FlxGamepadInputID;
  * ...
  * @author 
  */
-class GPInput extends __ASSET__flixel_fonts_monsterrat_ttf
+class GPInput extends BasicInput
 {
 
 	private var _gamepad : FlxGamepad = null;
@@ -25,5 +25,11 @@ class GPInput extends __ASSET__flixel_fonts_monsterrat_ttf
 		
 		xVal = _gamepad.getXAxis(FlxGamepadInputID.LEFT_ANALOG_STICK);
 		yVal = _gamepad.getYAxis(FlxGamepadInputID.LEFT_ANALOG_STICK);
+		
+		shoot = _gamepad.justPressed.RIGHT_TRIGGER;
+		if (xVal != 0 || yVal != 0 || shoot )
+		{
+			anyPressed = true;
+		}
 	}
 }
