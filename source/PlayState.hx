@@ -38,10 +38,8 @@ class PlayState extends FlxState
 		
 		_level = new Level();
 
-		_gi = new GameInterface();
-		_gi.addPlayer(p0, 750.0,  80.0);
-		_gi.addPlayer(p1,  50.0,  80.0);
-		_gi.addPlayer(p3, 750.0, 520.0);
+		var playersList:Array<Player> = [p0,p1,p3];
+		_gi = new GameInterface(playersList);
 	}
 
 	override public function update(elapsed:Float):Void
