@@ -91,6 +91,14 @@ class MapGenerator // extends FlxState
 	
 	private static function FindColorAtPoint(point : FlxVector) : FlxColor
 	{
+		var closestIndex : Int;
+		closestIndex = FindIndexOfNearestPoint(point);
+		
+		return colors[closestIndex];
+	}
+	
+	private static function FindIndexOfNearestPoint(point : FlxVector) : Int
+	{
 		var closestDistance : Float;
 		var closestIndex : Int;
 		
@@ -108,7 +116,7 @@ class MapGenerator // extends FlxState
 			}
 		}
 		
-		return colors[closestIndex];
+		return closestIndex;
 	}
 	
 	private static function ColorPixelOnSprite(point : FlxVector, color : FlxColor)
