@@ -35,12 +35,15 @@ class Player extends FlxSprite
 		
 	}
 	
-	public function setState ( state : PlayState, input : BasicInput, id)
+	public function setState ( state : PlayState, input : BasicInput, id: Int)
 	{
 		_state = state;
 		_input = input;
 		_ID = id;
 		
+		this.x += id * 100;
+		//this.mass =  1.0 / (id + 1);
+		//trace(this.mass);
 		colorPlayer();
 	}
 	

@@ -35,6 +35,8 @@ class PlayState extends FlxState
 	{
 		super.update(elapsed);
 		
+		FlxG.collide(_players, _players);
+		
 		for (p in _players)
 		{
 			p.update(elapsed);
