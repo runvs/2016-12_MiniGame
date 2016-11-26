@@ -48,6 +48,12 @@ class MenuState extends FlxState
          add(_gameSubtitle);
          
          // add the players
+		GP.PCols = new PlayerColors();
+		//_startText = new FlxText( 100, 100, 0, "pushover, press Space to start", 16);
+        // contains the "player<x>: press A to join" messages
+        //_playerText = new Array<String>();
+		//add(_startText);
+        //add(_playerText);	
 	}
 
 	override public function update(elapsed:Float):Void
