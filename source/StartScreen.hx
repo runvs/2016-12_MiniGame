@@ -95,7 +95,14 @@ class StartScreen extends FlxState
         }
 		if (FlxG.keys.pressed.SPACE)
 		{
-			FlxG.switchState(new PlayState());
+            var p : PlayState = new PlayState();
+            for (i in 0 ... alreadyJoined.length) {
+               if (alreadyJoined[i]) {
+                    p.addPlayer(input[i].name);
+               } 
+            }
+
+			FlxG.switchState(p);
 		}
 	}
 	
