@@ -10,8 +10,8 @@ class InputKeyboard1 extends BasicInput
 	
 	public function new() 
 	{
-		
-	}
+        name = "wasd";
+    }	
 	
 	public override function update(elapsed : Float ) : Void
 	{
