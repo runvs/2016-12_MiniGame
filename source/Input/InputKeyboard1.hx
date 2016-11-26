@@ -10,7 +10,6 @@ class InputKeyboard1 extends BasicInput
 	
 	public function new() 
 	{
-		
 	}
 	
 	public override function update(elapsed : Float ) : Void
@@ -55,5 +54,4 @@ class InputKeyboard1 extends BasicInput
 			xShootVal = 1;
 		}
 	}
-	
 }
