@@ -30,7 +30,7 @@ class Player extends FlxSprite
 		/// graphic stuff 
 		this.loadGraphic(AssetPaths.gfx_char_sheet__png, true, 50, 45, true);
 		this.animation.add("idle", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1], 6);
-		this.animation.add("walk", [2, 3], 6);
+		this.animation.add("walk", [2, 3], 8);
 		this.animation.add("hit", [4], 5);
 		
 		this.animation.play("idle");
@@ -90,18 +90,50 @@ class Player extends FlxSprite
 		
 		_input.update(elapsed);
 		
-		this.angle = - 90 +  Math.atan2(_input.yVal, _input.xVal).Rad2Deg();
+
+		
+		
+		var xs : Float = _input.xShootVal.ClampPMSoft();
+		var ys : Float = _input.yShootVal.ClampPMSoft();
+	
 		
 		this.acceleration.x = _input.xVal * GP.PlayerAccelerationFactor;
 		this.acceleration.y = _input.yVal * GP.PlayerAccelerationFactor;
 		
-		if (Math.abs(_input.xShootVal) > 0.5 || Math.abs(_input.yShootVal) > 0.5 )
+		var axs : Bool = acceleration.x > 0;
+		var ays : Bool = acceleration.y > 0;
+		
+		var vxs : Bool = velocity.x > 0;
+		var vys : Bool = velocity.y > 0;
+		
+		//if (axs != vxs) velocity.x *= -0.5;
+		//if (ays != vys) velocity.y *= -0.5;
+		if (axs != vxs) acceleration.x *= 4;
+		if (ays != vys) acceleration.y *= 4;
+		
+		var velAbs : Float = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+		if ( velAbs > GP.PlayerMaxVelocity)
 		{
+			velocity.x /= velAbs / GP.PlayerMaxVelocity;
+			velocity.y /= velAbs / GP.PlayerMaxVelocity;
+		}
+		
+		
+		var RTabs = Math.sqrt(xs * xs + ys * ys);
+		if (RTabs > 0.4)
+		{
+			this.angle = - 90 +  Math.atan2(ys, xs).Rad2Deg();
 			if (_shootTimer <= 0 )
 			{
 				shoot();
 			}
 		}
+		else
+		{
+			this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
+		}
+		//if (Math.abs(_input.xShootVal) > 0.5 || Math.abs(_input.yShootVal) > 0.5 )
+		super.update(elapsed);
 		
 		
 		if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
@@ -113,7 +145,7 @@ class Player extends FlxSprite
 			this.animation.play("idle");
 		}
 		
-		super.update(elapsed);
+
 		 
 		//trace(this.acceleration);
 
@@ -125,10 +157,22 @@ class Player extends FlxSprite
 		s.x = x;
 		s.y = y;
 		
-		s.velocity.x = GP.ShotVelocity * _input.xShootVal;
-		s.velocity.y = GP.ShotVelocity * _input.yShootVal;
+		var xs : Float = _input.xShootVal.ClampPMSoft();
+		var ys : Float = _input.yShootVal.ClampPMSoft();
+		s.angle = Math.atan2(ys, xs).Rad2Deg();
 		
-		s.firedBy = _ID;
+		var l : Float = Math.sqrt(xs * xs + ys * ys);
+		
+		
+		s.velocity.x = GP.ShotVelocity * xs/l;
+		s.velocity.y = GP.ShotVelocity * ys/l;
+		
+		
+		
+		
+		s.colorMe(_ID);
+		
+		
 		_state.spawnShot(s);
 		this._shootTimer = GP.PlayerShootCoolDown;
 		
