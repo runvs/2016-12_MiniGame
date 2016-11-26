@@ -2,6 +2,8 @@ package;
 
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.util.FlxColor;
+using MathExtender;
 
 /**
  * ...
@@ -17,6 +19,9 @@ class Player extends FlxSprite
 	public function new() 
 	{
 		super();
+		
+		this.makeGraphic(32, 16, FlxColor.WHITE);
+		
 	}
 	
 	public function setState ( state : PlayState, input : BasicInput)
@@ -32,8 +37,12 @@ class Player extends FlxSprite
 		
 		_input.update(elapsed);
 		
+		this.angle = Math.atan2(_input.yVal, _input.xVal).Rad2Deg();
+		
 		this.acceleration.x = _input.xVal;
 		this.acceleration.y = _input.yVal;
+		
+		
 		
 		super.update(elapsed);
 		 
