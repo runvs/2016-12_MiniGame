@@ -8,9 +8,11 @@ import flixel.ui.FlxButton;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import haxe.ds.Vector;
+import openfl.Vector.VectorDataIterator;
 
 /* Very Basic Voronoi map Generator
  * To Generate a Map, must call Generate(sizeX, sizeY, points).
+ * To access generated layers, use GetLayer(i) or GetLayers().
  */
 class MapGenerator // extends FlxState
 {
@@ -19,6 +21,7 @@ class MapGenerator // extends FlxState
 	private static var points : Array<FlxVector>;
 	private static var colors : Array<FlxColor>;
 	private static var sprite : FlxSprite;
+	private static var layers : Array<FlxSprite>;
 	
 	/* For Testing
 	override public function create() : Void
@@ -26,7 +29,7 @@ class MapGenerator // extends FlxState
 		super.create();
 		FlxG.camera.bgColor = FlxColor.RED;
 		
-		sprite = Generate(1024, 1024, 100);
+		sprite = Generate(512, 512, 100);
 		add(sprite);
 	}
 	/**/
@@ -46,6 +49,27 @@ class MapGenerator // extends FlxState
 		return sprite;
 	}
 	
+	public static function GetLayers() : Array<FlxSprite>
+	{
+		return layers;
+	}
+	
+	public static function GetLayer(i : Int) : FlxSprite
+	{
+		if (i < layers.length)
+		{
+			return layers[i];
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+	// --------------
+	// -- Privates --
+	// --------------
+	
 	private static function CreateRandomPoints(pointAmount : Int) : Void
 	{
 		points = new Array<FlxVector>();
@@ -62,31 +86,57 @@ class MapGenerator // extends FlxState
 	private static function CreateRandomColors(pointAmount : Int) : Void
 	{
 		colors = new Array<FlxColor>();
+		layers = new Array<FlxSprite>();
 		
 		for (i in 0 ... pointAmount)
 		{
 			colors.push(FlxG.random.color(FlxColor.WHITE, FlxColor.BLACK, 255, false));
+			
+			var layer : FlxSprite;
+			layer = new FlxSprite();
+			layer.makeGraphic(x, y, FlxColor.TRANSPARENT);			
+			layers.push(layer);
 		}
 	}
 
 	private static function DrawMap()
 	{
-		sprite.pixels.lock();
-		
+		LockSprites();
+
 		for (ix in 0 ... x)
 		{
 			for (iy in 0 ... y)
 			{
-				var color : FlxColor;
+				var colorIndex : Int;
 				var coordinate : FlxVector;
 				
 				coordinate = new FlxVector(ix, iy);
-				color = FindColorAtPoint(coordinate);
-				ColorPixelOnSprite(coordinate, color);
+				colorIndex = FindIndexOfNearestPoint(coordinate);
+				ColorPixel(coordinate, colorIndex);
 			}
 		}
 		
+		UnlockSprites();
+	}
+	
+	private static function LockSprites() : Void
+	{
+		sprite.pixels.lock();
+		
+		for (i in 0 ... layers.length)
+		{
+			layers[i].pixels.lock();
+		}
+	}
+
+	private static function UnlockSprites() : Void
+	{
 		sprite.pixels.unlock();
+		
+		for (i in 0 ... layers.length)
+		{
+			layers[i].pixels.lock();
+		}
 	}
 	
 	private static function FindColorAtPoint(point : FlxVector) : FlxColor
@@ -119,8 +169,12 @@ class MapGenerator // extends FlxState
 		return closestIndex;
 	}
 	
-	private static function ColorPixelOnSprite(point : FlxVector, color : FlxColor)
+	private static function ColorPixel(point : FlxVector, colorIndex : Int)
 	{
+		var color : FlxColor;
+		color = colors[colorIndex];
+		
 		sprite.pixels.setPixel32(Std.int(point.x), Std.int(point.y), color);
+		layers[colorIndex].pixels.setPixel32(Std.int(point.x), Std.int(point.y), color);
 	}
 }
