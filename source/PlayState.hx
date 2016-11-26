@@ -10,7 +10,7 @@ import flixel.util.FlxColor;
 
 class PlayState extends FlxState
 {
-	//private var _spr : FlxSprite;
+	private var _spr : FlxSprite;
 	
 	override public function create():Void
 	{
