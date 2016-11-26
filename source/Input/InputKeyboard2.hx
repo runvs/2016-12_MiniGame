@@ -10,7 +10,7 @@ class InputKeyboard2 extends BasicInput
 	
 	public function new() 
 	{
-		
+        name = "arrows";		
 	}
 	
 	public override function update(elapsed : Float ) : Void

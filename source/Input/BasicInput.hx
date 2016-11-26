@@ -12,7 +12,7 @@ class BasicInput
 	public var shoot : Bool = false;
 	
 	public var anyPressed :Bool = false;
-
+    public var name (default, null) : String = "";
 	public function update(elapsed: Float) : Void 
 	{
 		// reset the values
