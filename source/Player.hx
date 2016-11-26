@@ -40,6 +40,13 @@ class Player extends FlxSprite
 		_state = state;
 		_input = input;
 		_ID = id;
+		
+		colorPlayer();
+	}
+	
+	function colorPlayer() 
+	{
+		// todo
 	}
 	
 	
@@ -67,7 +74,7 @@ class Player extends FlxSprite
 		
 		super.update(elapsed);
 		 
-		trace(this.acceleration);
+		//trace(this.acceleration);
 
 	}
 	

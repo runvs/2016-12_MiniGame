@@ -3,35 +3,50 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 
+
 class PlayState extends FlxState
 {
-	private var _spr : FlxSprite;
-	
-	private var _p1 : Player;
+
+	private var _players : FlxTypedGroup<Player>;
 	
 	override public function create():Void
 	{
 		super.create();
-		//FlxG.camera.bgColor = FlxColor.RED;
+	
+		_players = new FlxTypedGroup<Player> ();
 		
-		_spr = new FlxSprite();
-		_spr.makeGraphic(32, 32, FlxColor.WHITE);
-		add(_spr);
+		var p0 : Player = new Player();
+		p0.setState(this, new InputKeyboard1(), 0);
+		_players.add(p0);
 		
-		_p1 = new Player();
-		_p1.setState(this, new InputKeyboard(), 0);
-		add(_p1);
-		
-		_spr.pixels.setPixel32(15, 15, FlxColor.BLUE);
+		var p1 : Player = new Player();
+		p1.setState(this, new InputKeyboard2(), 1);
+		_players.add(p1);
+
 	}
 
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
+		
+		for (p in _players)
+		{
+			p.update(elapsed);
+		}
+	}
+	
+	override public function draw () : Void 
+	{
+		super.draw();
+			for (p in _players)
+		{
+			p.draw();
+		}
 	}
 }

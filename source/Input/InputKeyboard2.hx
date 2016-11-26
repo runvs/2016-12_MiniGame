@@ -5,7 +5,7 @@ import flixel.FlxG;
  * ...
  * @author 
  */
-class InputKeyboard1 extends BasicInput
+class InputKeyboard2 extends BasicInput
 {
 	
 	public function new() 
