@@ -55,6 +55,8 @@ class PlayState extends FlxState
 	{
 		super.create();
 		
+		
+		
 		_effects = new FlxSpriteGroup();
 		
 		_players = new FlxTypedGroup<Player> ();
