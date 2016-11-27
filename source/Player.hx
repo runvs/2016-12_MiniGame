@@ -77,9 +77,7 @@ class Player extends FlxSprite
 		_state = state;
 		_input = input;
 		_ID = id;
-		
 		this.x += id * 100;
-
 		colorPlayer();
 		respawn(true);
 	}
@@ -131,7 +129,6 @@ class Player extends FlxSprite
 		{
 			velocity.set();
 			acceleration.set();
-			
 		}
 		
 		if (_acceptinput)
@@ -178,7 +175,6 @@ class Player extends FlxSprite
 			this._shootTimer = GP.PlayerShootCoolDown * (1 - _damageTrack / 150);
 			if (this._shootTimer <= 0.1) _shootTimer = 0.1;
 			shootSound.play();
-
 		}
 		
 	}
@@ -270,13 +266,9 @@ class Player extends FlxSprite
 		
 		var l : Float = Math.sqrt(xs * xs + ys * ys);
 		
-		
 		s.velocity.x = GP.ShotVelocity * xs/l;
 		s.velocity.y = GP.ShotVelocity * ys/l;
-		
-		
-		
-		
+
 		s.colorMe(_ID);
 		
 		
@@ -299,14 +291,13 @@ class Player extends FlxSprite
 		function(t)
 		{
 			respawn();
-			
 		}
-		
 		});
 	}
 	
 	public function respawn (first: Bool= false)
 	{
+		_ammunition = 15;
 		this.scale.set(1, 1);
 		this.alpha = 1;
 		_timeTilSpawn = 0;
@@ -353,7 +344,7 @@ class Player extends FlxSprite
 	
 	override public function draw():Void 
 	{
-		 super.draw();
+		super.draw();
 	}
 	
 }

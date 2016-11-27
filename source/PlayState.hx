@@ -170,8 +170,8 @@ class PlayState extends FlxState
 	
 	function playerhit(p1 : Player, p2 : Player) 
 	{
-		if (p1._collideCooldown <= 0) p1.hit(null);
-		if (p2._collideCooldown <= 0) p2.hit(null);
+		if (p1._acceptinput && p1._collideCooldown <= 0) p1.hit(null);
+		if (p2._acceptinput && p2._collideCooldown <= 0) p2.hit(null);
 	}
 	
 	
