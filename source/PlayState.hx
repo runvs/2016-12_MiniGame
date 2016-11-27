@@ -43,6 +43,7 @@ class PlayState extends FlxState
 	public function addPlayer(name : String)
 	{
 		_startPlayers.push(name);
+
 	}
 	
 	public function setTimer (t : Float )
@@ -116,20 +117,30 @@ class PlayState extends FlxState
 		{
 			if (p._acceptinput)
 			{
-				var onlevel : Bool = false;
-				for (l in _level._pieces)
-				{
-					if (onlevel) continue;
-					
-					if (FlxG.pixelPerfectOverlap(p, l, 1))
-					{
-						onlevel = true;
-					}
-				}
-				if (!onlevel)
+				
+				var dx = FlxG.width / 2 - p.x ;
+				var dy = FlxG.height/ 2 - p.y ;
+				var r : Float = dx*dx + dy*dy;
+				//trace(_level._radius);
+				if (r > _level._radius * _level._radius)
 				{
 					p.die();
 				}
+				
+				//var onlevel : Bool = false;
+				//for (l in _level._pieces)
+				//{
+					//if (onlevel) continue;
+					//
+					//if (FlxG.pixelPerfectOverlap(p, l, 1))
+					//{
+						//onlevel = true;
+					//}
+				//}
+				//if (!onlevel)
+				//{
+					//p.die();
+				//}
 			}
 		}
 		

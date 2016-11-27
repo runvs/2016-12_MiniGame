@@ -38,6 +38,7 @@ class Player extends FlxSprite
 	private var shootSound : FlxSound;
 	private var hitSound : FlxSound;
 	private var deathSound : FlxSound;
+	public var _lastangle : Float = 0;
 	
 	public function new() 
 	{
@@ -56,7 +57,7 @@ class Player extends FlxSprite
 		// movement stuff
 		this.drag.set(GP.PlayerDrag, GP.PlayerDrag);
 		this.maxVelocity.set(GP.PlayerMaxVelocity, GP.PlayerMaxVelocity);
-		this.elasticity = 0.0;
+		this.elasticity = 1.0;
 		
 		_damageTrack = 0;
 		
@@ -167,7 +168,7 @@ class Player extends FlxSprite
 	
 	function calculateElasticity() 
 	{
-		this.elasticity = 0.5 +  _damageTrack / 35;
+		this.elasticity = 1.0 +  _damageTrack / 35;
 	}
 	
 	function handleInputAndMovement(elapsed : Float):Void 
@@ -210,8 +211,17 @@ class Player extends FlxSprite
 		}
 		else
 		{
-			this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
+			if (velocity.y == 0 && velocity.x == 0)
+			{
+				this.angle = _lastangle;
+			}
+			else
+			{
+				this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
+				
+			}
 		}
+		_lastangle = angle;
 	
 		if (accsummedX > 3000) accsummedX = 3000;
 		if (accsummedX < -3000) accsummedX = -3000;
@@ -229,6 +239,34 @@ class Player extends FlxSprite
 	
 	public function getDamageTrack()
 	{
+		var s : Shot = new Shot();
+        // dimensions of the shot : x = 64; y = 16
+        s.offset.y = s.height/2;
+        s.offset.x = s.width/2;
+        
+        trace(this.angle);
+		s.x = x + (this.width/2) + (this.width/2) * 0;
+		s.y = y + (this.height/2) - (this.height/2)  * 0;
+		
+		var xs : Float = _input.xShootVal.ClampPMSoft();
+		var ys : Float = _input.yShootVal.ClampPMSoft();
+		s.angle = Math.atan2(ys, xs).Rad2Deg();
+		
+		var l : Float = Math.sqrt(xs * xs + ys * ys);
+		
+		
+		s.velocity.x = GP.ShotVelocity * xs/l;
+		s.velocity.y = GP.ShotVelocity * ys/l;
+		
+		
+		
+		
+		s.colorMe(_ID);
+		
+		
+		_state.spawnShot(s);
+		this._shootTimer = GP.PlayerShootCoolDown;
+		
 		return this._damageTrack;
 	}
 	

@@ -17,6 +17,8 @@ class Level
 
 	public var _pieces : FlxSpriteGroup;
 	
+	public var _radius : Float = 0;
+	
 	
 	public function new() 
 	{
@@ -38,7 +40,8 @@ class Level
 		var circle  : FlxSprite = new FlxSprite(0, 0);
 		circle.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT);
 
-		circle.drawCircle(circle.width / 2, circle.height / 2, Math.min(circle.width / 2, circle.height / 2) * 0.85, FlxColor.WHITE);
+		_radius = Math.min(circle.width / 2, circle.height / 2) * 0.85;
+		circle.drawCircle(circle.width / 2, circle.height / 2, _radius, FlxColor.WHITE);
 		_pieces.add(circle);
 	}
 	
