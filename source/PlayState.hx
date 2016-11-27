@@ -199,7 +199,7 @@ class PlayState extends FlxState
 		while (r > 1) r = FlxG.random.float(0, 1) + FlxG.random.float(0, 1);
 		r *= _level._radius;
 		var crate : FlxSprite = new FlxSprite(FlxG.width / 2 + r * Math.cos(a), FlxG.height / 2 + r * Math.sin(a));
-		
+		crate.loadGraphic(AssetPaths.gfx_ammo__png, false, 32, 32);
 		_level._amminutionpacks.add(crate);
 	}
 	
