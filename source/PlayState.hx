@@ -19,11 +19,11 @@ using flixel.util.FlxSpriteUtil;
 class PlayState extends FlxState
 {
 
-	private var _players : FlxTypedGroup<Player>;
+	public var _players : FlxTypedGroup<Player>;
 	private var _level : Level;
 	private var _gi : GameInterface;
 	
-	private var _startPlayers : Array<String>;
+	public var _startPlayers : Array<String>;
 	
 	private var _effects : FlxSpriteGroup;
 	
@@ -32,8 +32,7 @@ class PlayState extends FlxState
 	private var _timerPunchTimer : FlxTimer;
 	
 	private var _inputEnabled : Bool = true;
-	
-	
+     
 	public function new ()
 	{
 		super();
@@ -48,7 +47,7 @@ class PlayState extends FlxState
 	
 	public function setTimer (t : Float )
 	{
-		_timer = t;
+		_timer = GP.gameTime;
 		FlxTween.color(_timerText, 10, FlxColor.WHITE, FlxColor.RED, { startDelay: _timer - 10 } );
 	}
 	
@@ -167,9 +166,10 @@ class PlayState extends FlxState
 		if (dec < 0) dec *= -1;
 		_timerText.text = Std.string(Std.int(_timer) + "." + Std.string(dec));
 	}
-	
+    	
 	function playerhit(p1 : Player, p2 : Player) 
 	{
+      
 		if (p1._collideCooldown <= 0) p1.hit(null);
 		if (p2._collideCooldown <= 0) p2.hit(null);
 	}
@@ -184,7 +184,7 @@ class PlayState extends FlxState
 	
 		function DoEndGame():Void 
 	{
-		var e : EndGameState = new EndGameState();
+		var e : EndGameState = new EndGameState(this);
 		FlxG.switchState(e);
 	}
 	
@@ -196,6 +196,9 @@ class PlayState extends FlxState
 		{
 			p.draw();
 		}
+        
+        trace("adfasdfasdfasdffdsf");
+        trace(_level._shots);
 		_level._shots.draw();
 		_gi.draw();
 		

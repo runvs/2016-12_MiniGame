@@ -10,5 +10,6 @@ class Main extends Sprite
 	{
 		super();
 		addChild(new FlxGame(GP.ScreenWidth, GP.ScreenHeight, StartScreen, 1, 60, 60, true));
+        
 	}
 }

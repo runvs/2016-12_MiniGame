@@ -22,7 +22,7 @@ class Player extends FlxSprite
 	
 	public var _damageTrack : Float;
 	
-	private var _shootTimer : Float = 0;
+	private  var _shootTimer : Float = 0;
 
 	private var hitColorTween : FlxTween = null;
 	
