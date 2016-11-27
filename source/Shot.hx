@@ -47,7 +47,7 @@ class Shot extends FlxSprite
 	{
 		firedBy = id;
 		//this.color = GP.PCols.get(id);
-		_glowoverlay.color = this.color;
+		_glowoverlay.color = GP.PCols.get(id);
 	}
 	
 	public override function draw()
