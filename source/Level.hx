@@ -30,10 +30,13 @@ class Level
 		_pieces = new FlxSpriteGroup();
 		
 		var circle  : FlxSprite = new FlxSprite(0, 0);
-		circle.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT);
+		//circle.makeGraphic(FlxG.width, FlxG.height, FlxColor.TRANSPARENT);
+		circle.loadGraphic(AssetPaths.gfx_arena__png, false, 600, 600);
+		circle.offset.set (300, 300);
+		circle.x = FlxG.width / 2;
+		circle.y = FlxG.height/ 2;
 
-		_radius = Math.min(circle.width / 2, circle.height / 2) * 0.85;
-		circle.drawCircle(circle.width / 2, circle.height / 2, _radius, FlxColor.WHITE);
+		_radius = Math.min(circle.width / 2, circle.height / 2);
 		_pieces.add(circle);
 	}
 	

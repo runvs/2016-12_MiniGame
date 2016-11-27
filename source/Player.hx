@@ -288,7 +288,7 @@ class Player extends FlxSprite
 	public function die ()
 	{
 		deathSound.play();
-		hitColorTween.cancel();
+		if (hitColorTween != null) hitColorTween.cancel();
 		_acceptinput = false;
 		
 		this.animation.play("hit", true);
