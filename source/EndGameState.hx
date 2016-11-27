@@ -15,6 +15,7 @@ class EndGameState extends FlxState
     private  var _gameOverText : FlxText;
     private  var _gameOverSubtitle : FlxText;
     private  var _gameStats : FlxText;
+    private var _winnerText : FlxText;
     private  var t : Float = 0;
     private  var state : PlayState; 
     public function new(state : PlayState) {
@@ -39,10 +40,27 @@ class EndGameState extends FlxState
         _gameOverSubtitle.alignment = "center";
         
         var playerTexts : Array<FlxText> = new Array<FlxText>();
+        var lowestDeaths : Int = 0xabc;
         
+        _winnerText = new FlxText(0, 340, FlxG.width, "", GP.fontSize(6));
+        var winText : String = "";
+        for (i in 0 ...state._players.length) {
+            if (state._players.members[i].deaths < lowestDeaths){
+                winText = 'The winner is player ${state._players.members[i]._ID}';
+                lowestDeaths = state._players.members[i].deaths;
+                _winnerText.color = GP.PCols.get(state._players.members[i]._ID);
+            } else if (i == state._players.length - 1 && lowestDeaths == 0xabc) {
+                winText = 'Draw!';
+            }
+        }
+        _winnerText.text = winText;
+        _winnerText.alignment = "center";
+        _winnerText.font = "assets/data/MECHAG.ttf";
+        add(_winnerText);
+
         for (i in 0... state._players.length) {
             var p : Player = state._players.members[i];
-            var t : FlxText = new FlxText(80 + i*192, 350, 200 - 16 , "", GP.fontSize(6) - 10);
+            var t : FlxText = new FlxText(80 + i*192, 450, 200 - 16 , "", GP.fontSize(6) - 16);
             t.text = "Player: " + Std.string(p._ID);
             t.text += "\nDeaths: " + Std.string(p.deaths);
             t.text += "\nAvg. Damage: " + Std.string(p.averageDamage);
