@@ -199,6 +199,7 @@ class PlayState extends FlxState
 	{
 		var mindeath : Int = 6000;
 		var idx : Int = 0;
+
 		for (i in 0 ... _players.length)
 		{
 			var p : Player = _players.members[i];
@@ -211,7 +212,7 @@ class PlayState extends FlxState
 		for (i in 0 ... _players.length)
 		{
 			var p : Player = _players.members[i];
-			p._glowoverlay.alpha = (i == idx) ? 0.8 : 0.0;
+			p._glowoverlay.alpha = (i == idx|| _players.members[i].deaths == _players.members[idx].deaths) ? 0.8 : 0.0;
 		}
 	}
     	
