@@ -10,8 +10,9 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.math.FlxMath;
+import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
-
+using flixel.util.FlxSpriteUtil;
 
 class PlayState extends FlxState
 {
@@ -24,6 +25,10 @@ class PlayState extends FlxState
 	
 	private var _effects : FlxSpriteGroup;
 	
+	private var _timer : Float = 0;
+	
+	private var _timerText : FlxText;
+	
 	public function new ()
 	{
 		super();
@@ -35,6 +40,10 @@ class PlayState extends FlxState
 		_startPlayers.push(name);
 	}
 	
+	public function setTimer (t : Float )
+	{
+		_timer = t;
+	}
 	
 	override public function create():Void
 	{
@@ -55,6 +64,13 @@ class PlayState extends FlxState
 		
 		_gi = new GameInterface(_playersArray);
 		_level = new Level();
+		
+		_timerText = new FlxText(0, 0, 0, "", 16);
+		_timerText.screenCenter(FlxAxes.X);
+		_timerText.y = 16;
+		
+		
+		
 	}
 
 	override public function update(elapsed:Float):Void
@@ -82,16 +98,22 @@ class PlayState extends FlxState
 
 				if ( FlxG.overlap(p, s))
 				{
+					p.hit(s);
 					FlxObject.separate(p, s);
 					s.alive = false;
 					spawnHit(s);
-					p.hit();
+					
 					
 				}
 			}
 		}
 		_gi.update(elapsed);
 		_effects.update(elapsed);
+		_timerText.update(elapsed);
+		
+		var dec: Int = Std.int((_timer * 10) % 10);
+		if (dec < 0) dec *= -1;
+		_timerText.text = Std.string(Std.int(_timer) + "." + Std.string(dec));
 	}
 	
 	override public function draw () : Void 
@@ -105,6 +127,8 @@ class PlayState extends FlxState
 		_gi.draw();
 		
 		_effects.draw();
+		
+		_timerText.draw();
 	}
 	
 	public function spawnShot ( s : Shot) : Void 

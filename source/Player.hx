@@ -24,6 +24,9 @@ class Player extends FlxSprite
 
 	private var hitColorTween : FlxTween = null;
 	
+	private var accsummedX : Float = 0;
+	private var accsummedY : Float = 0;
+	
 	public function new() 
 	{
 		super();
@@ -135,8 +138,15 @@ class Player extends FlxSprite
 		{
 			this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
 		}
+		
+		acceleration.x += accsummedX;
+		acceleration.y += accsummedY;
+		//trace(accsummedX);
+		velocity.x += accsummedX;
+		velocity.y += accsummedY;
 		super.update(elapsed);
 		
+		accsummedX = accsummedY = 0;
 		
 		if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
 		{
@@ -171,8 +181,8 @@ class Player extends FlxSprite
 		var l : Float = Math.sqrt(xs * xs + ys * ys);
 		
 		
-		s.velocity.x = GP.ShotVelocity * xs/l;
-		s.velocity.y = GP.ShotVelocity * ys/l;
+		s.velocity.x = GP.ShotVelocity * xs/l + velocity.x/2;
+		s.velocity.y = GP.ShotVelocity * ys/l + velocity.y/2; 
 		
 		
 		
@@ -195,7 +205,7 @@ class Player extends FlxSprite
 		return this._damageTrack;
 	}
 
-	public function hit ()
+	public function hit (s: Shot)
 	{
 		if (hitColorTween == null || hitColorTween.finished)
 		{
@@ -206,6 +216,11 @@ class Player extends FlxSprite
 			hitColorTween.cancel();
 			hitColorTween = FlxTween.color(this, 0.25, FlxColor.RED, FlxColor.WHITE);
 		}
+	
+		//trace(s.velocity);
+		accsummedX = s.velocity.x * elasticity * 4;
+		accsummedY = s.velocity.y * elasticity * 4;
+		
 		_damageTrack += GP.PlayerDamageTrackIncrease;
 	}
 	
