@@ -43,6 +43,7 @@ class PlayState extends FlxState
 	public function addPlayer(name : String)
 	{
 		_startPlayers.push(name);
+
 	}
 	
 	public function setTimer (t : Float )

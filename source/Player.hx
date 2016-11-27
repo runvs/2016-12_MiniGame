@@ -248,6 +248,34 @@ class Player extends FlxSprite
 	
 	public function getDamageTrack()
 	{
+		var s : Shot = new Shot();
+        // dimensions of the shot : x = 64; y = 16
+        s.offset.y = s.height/2;
+        s.offset.x = s.width/2;
+        
+        trace(this.angle);
+		s.x = x + (this.width/2) + (this.width/2) * 0;
+		s.y = y + (this.height/2) - (this.height/2)  * 0;
+		
+		var xs : Float = _input.xShootVal.ClampPMSoft();
+		var ys : Float = _input.yShootVal.ClampPMSoft();
+		s.angle = Math.atan2(ys, xs).Rad2Deg();
+		
+		var l : Float = Math.sqrt(xs * xs + ys * ys);
+		
+		
+		s.velocity.x = GP.ShotVelocity * xs/l;
+		s.velocity.y = GP.ShotVelocity * ys/l;
+		
+		
+		
+		
+		s.colorMe(_ID);
+		
+		
+		_state.spawnShot(s);
+		this._shootTimer = GP.PlayerShootCoolDown;
+		
 		return this._damageTrack;
 	}
 	
