@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.system.FlxAssets.FlxGraphicAsset;
@@ -26,6 +27,8 @@ class Player extends FlxSprite
 	
 	private var accsummedX : Float = 0;
 	private var accsummedY : Float = 0;
+	
+	public var _collideCooldown  : Float = 0;
 	
 	public function new() 
 	{
@@ -83,6 +86,8 @@ class Player extends FlxSprite
 	override public function update(elapsed:Float):Void 
 	{
 		
+		_collideCooldown -= elapsed;
+		
 		
 		if (_shootTimer > 0)
 		{
@@ -138,12 +143,14 @@ class Player extends FlxSprite
 		{
 			this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
 		}
-		
-		acceleration.x += accsummedX;
-		acceleration.y += accsummedY;
-		//trace(accsummedX);
+	
+		if (accsummedX > 3000) accsummedX = 3000;
+		if (accsummedX < -3000) accsummedX = -3000;
+		if (accsummedY > 3000) accsummedY = 3000;
+		if (accsummedY < -3000) accsummedY = -3000;
 		velocity.x += accsummedX;
 		velocity.y += accsummedY;
+		
 		super.update(elapsed);
 		
 		accsummedX = accsummedY = 0;
@@ -184,29 +191,37 @@ class Player extends FlxSprite
 		s.velocity.x = GP.ShotVelocity * xs/l + velocity.x/2;
 		s.velocity.y = GP.ShotVelocity * ys/l + velocity.y/2; 
 		
-		
-		
-		
 		s.colorMe(_ID);
-		
-		
+
 		_state.spawnShot(s);
-		this._shootTimer = GP.PlayerShootCoolDown;
-		
+		this._shootTimer = GP.PlayerShootCoolDown * (1 - _damageTrack / 150);
+		if (this._shootTimer <= 0.1) _shootTimer = 0.1;
 	}
 	
 	function calculateElasticity() 
 	{
-		this.elasticity = _damageTrack / 50;
+		this.elasticity = 0.5 +  _damageTrack / 35;
 	}
+	
+	
 	
 	public function getDamageTrack()
 	{
 		return this._damageTrack;
 	}
+	
+	public function respawn ()
+	{
+		this.setPosition(FlxG.width / 2, FlxG.height / 2);
+		_damageTrack = 0;
+	}
 
+	
+	
 	public function hit (s: Shot)
 	{
+		_collideCooldown = 0.25;
+		
 		if (hitColorTween == null || hitColorTween.finished)
 		{
 			hitColorTween = FlxTween.color(this, 0.25, FlxColor.RED, FlxColor.WHITE);
@@ -217,10 +232,12 @@ class Player extends FlxSprite
 			hitColorTween = FlxTween.color(this, 0.25, FlxColor.RED, FlxColor.WHITE);
 		}
 	
-		//trace(s.velocity);
-		accsummedX = s.velocity.x * elasticity * 4;
-		accsummedY = s.velocity.y * elasticity * 4;
-		
+		if (s != null)
+		{
+			//trace(s.velocity);
+			accsummedX = s.velocity.x * elasticity * 4;
+			accsummedY = s.velocity.y * elasticity * 4;
+		}
 		_damageTrack += GP.PlayerDamageTrackIncrease;
 	}
 	

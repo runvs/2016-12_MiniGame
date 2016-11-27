@@ -1,5 +1,6 @@
 package;
 
+import flash.utils.Timer;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -12,6 +13,7 @@ import flixel.ui.FlxButton;
 import flixel.math.FlxMath;
 import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 using flixel.util.FlxSpriteUtil;
 
 class PlayState extends FlxState
@@ -25,9 +27,12 @@ class PlayState extends FlxState
 	
 	private var _effects : FlxSpriteGroup;
 	
-	private var _timer : Float = 0;
-	
+	private var _timer : Float = 120;
 	private var _timerText : FlxText;
+	private var _timerPunchTimer : FlxTimer;
+	
+	private var _inputEnabled : Bool = true;
+	
 	
 	public function new ()
 	{
@@ -43,6 +48,7 @@ class PlayState extends FlxState
 	public function setTimer (t : Float )
 	{
 		_timer = t;
+		FlxTween.color(_timerText, 10, FlxColor.WHITE, FlxColor.RED, { startDelay: _timer - 10 } );
 	}
 	
 	override public function create():Void
@@ -65,9 +71,21 @@ class PlayState extends FlxState
 		_gi = new GameInterface(_playersArray);
 		_level = new Level();
 		
-		_timerText = new FlxText(0, 0, 0, "", 16);
+		_timerText = new FlxText(0, 0, 0, "", 28);
+		_timerText.alignment = FlxTextAlign.CENTER;
 		_timerText.screenCenter(FlxAxes.X);
 		_timerText.y = 16;
+		
+		_timerPunchTimer = new FlxTimer();
+		_timerPunchTimer.start(5, 
+		function (t) 
+		{
+			_timerText.scale.set(1.5, 1.5); 
+			var tw : FlxTween = FlxTween.tween(_timerText.scale, { x:1, y:1 }, 1); 
+			//var cl : FlxTween.color(_timerText, 0.5, FlxColor.GRAY, FlxColor.WHITE);
+		} 
+		, 0);
+		
 		
 		
 		
@@ -78,15 +96,30 @@ class PlayState extends FlxState
 		cleanEffects();
 		_level.cleanShots();
 		
+		if (_timer > 0)
+		{
+			_timer -= elapsed;
+		}
+		
+		if (_timer <= 0)
+		{
+			endGame();
+		}
+		
 		super.update(elapsed);
 		
-		FlxG.collide(_players, _players);
+		FlxG.collide(_players, _players, playerhit);
 		
-		for (p in _players)
+		
+		if (_inputEnabled)
 		{
-			p.update(elapsed);
+			for (p in _players)
+			{
+				p.update(elapsed);
+			}
+			_level._shots.update(elapsed);
 		}
-		_level._shots.update(elapsed);
+		
 		
 		for (p in _players)
 		{
@@ -114,6 +147,26 @@ class PlayState extends FlxState
 		var dec: Int = Std.int((_timer * 10) % 10);
 		if (dec < 0) dec *= -1;
 		_timerText.text = Std.string(Std.int(_timer) + "." + Std.string(dec));
+	}
+	
+	function playerhit(p1 : Player, p2 : Player) 
+	{
+		if (p1._collideCooldown <= 0) p1.hit(null);
+		if (p2._collideCooldown <= 0) p2.hit(null);
+	}
+	
+	
+	function endGame() 
+	{
+		
+		_inputEnabled = false;
+		FlxG.camera.fade(FlxColor.BLACK, 1.0, false, function(){DoEndGame();});
+	}
+	
+		function DoEndGame():Void 
+	{
+		var e : EndGameState = new EndGameState();
+		FlxG.switchState(e);
 	}
 	
 	override public function draw () : Void 
@@ -167,4 +220,6 @@ class PlayState extends FlxState
 		
 		_effects = elist;
 	}
+	
+
 }
