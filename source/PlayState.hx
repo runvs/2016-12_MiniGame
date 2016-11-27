@@ -93,15 +93,11 @@ class PlayState extends FlxState
 			//var cl : FlxTween.color(_timerText, 0.5, FlxColor.GRAY, FlxColor.WHITE);
 		} 
 		, 0);
-		
-		
-		
-		
+
 	}
 
 	override public function update(elapsed:Float):Void
 	{
-		
 		_lifeTime += elapsed;
 		cleanEffects();
 		_level.cleanShots();
@@ -115,6 +111,8 @@ class PlayState extends FlxState
 		{
 			endGame();
 		}
+		
+		checkBestPlayer();
 		
 		super.update(elapsed);
 		FlxG.collide(_players, _players, playerhit);
@@ -196,6 +194,26 @@ class PlayState extends FlxState
 		if (dec < 0) dec *= -1;
 		_timerText.text = Std.string(Std.int(_timer) + "." + Std.string(dec));
 	}
+	
+	function checkBestPlayer() 
+	{
+		var mindeath : Int = 6000;
+		var idx : Int = 0;
+		for (i in 0 ... _players.length)
+		{
+			var p : Player = _players.members[i];
+			if (p.deaths < mindeath)
+			{
+				mindeath = p.deaths;
+				idx = i;
+			}
+		}
+		for (i in 0 ... _players.length)
+		{
+			var p : Player = _players.members[i];
+			p._glowoverlay.alpha = (i == idx) ? 0.8 : 0.0;
+		}
+	}
     	
 		
 	function SpawnAmmu() 
@@ -205,7 +223,7 @@ class PlayState extends FlxState
 		var r : Float = FlxG.random.float(0, 1) + FlxG.random.float(0, 1);
 		while (r > 1) r = FlxG.random.float(0, 1) + FlxG.random.float(0, 1);
 		r *= _level._radius;
-		var crate : FlxSprite = new FlxSprite(FlxG.width / 2 + r * Math.cos(a), FlxG.height / 2 + r * Math.sin(a));
+		var crate : FlxSprite = new Crate(FlxG.width / 2 + r * Math.cos(a), FlxG.height / 2 + r * Math.sin(a));
 		crate.loadGraphic(AssetPaths.gfx_ammo__png, false, 32, 32);
 		_level._amminutionpacks.add(crate);
 	}

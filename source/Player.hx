@@ -8,6 +8,7 @@ import flixel.system.FlxSound;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
+import openfl.display.BlendMode;
 using MathExtender;
 
 /**
@@ -54,6 +55,8 @@ class Player extends FlxSprite
 	
 	public var _numberOfPickUps : Int = 0;
 	
+	public var _glowoverlay : FlxSprite;
+	
 	public function new() 
 	{
 		super(FlxG.width/2, FlxG.height/2);
@@ -90,8 +93,13 @@ class Player extends FlxSprite
 			averageDamage = _summedDamage / _counts; 
 			
 			if (_damageTrack >= _highestDamage) _highestDamage = _damageTrack;
-		}
+		}, 0
 		);
+		
+		_glowoverlay = new GlowOverlay(0, 0, FlxG.camera, Std.int(Math.max(this.width * 2, this.height * 2)), 1, 1);
+		_glowoverlay.color = FlxColor.fromRGB(255, 180, 80);
+		_glowoverlay.blend = BlendMode.ADD;
+		
 	}
 	
 	public function setState ( state : PlayState, input : BasicInput, id: Int)
@@ -357,6 +365,8 @@ class Player extends FlxSprite
 		hitSound.play();
 		_collideCooldown = 0.25;
 		
+		FlxG.camera.shake(0.005, 0.1);
+		
 		if (hitColorTween == null || hitColorTween.finished)
 		{
 			hitColorTween = FlxTween.color(this, 0.25, FlxColor.RED, FlxColor.WHITE);
@@ -378,7 +388,11 @@ class Player extends FlxSprite
 	
 	override public function draw():Void 
 	{
+		_glowoverlay.x = x + width/2;
+		_glowoverlay.y = y + height/2;
+		_glowoverlay.draw();
 		super.draw();
+		
 	}
 	
 }
