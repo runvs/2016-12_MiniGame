@@ -46,10 +46,12 @@ class EndGameState extends FlxState
         var winText : String = "";
         for (i in 0 ...state._players.length) {
             if (state._players.members[i].deaths < lowestDeaths){
-                winText = 'The winner is player ${state._players.members[i]._ID}';
+                winText = 'Player ${state._players.members[i]._ID} wins';
                 lowestDeaths = state._players.members[i].deaths;
                 _winnerText.color = GP.PCols.get(state._players.members[i]._ID);
-            } else if (i == state._players.length - 1 && lowestDeaths == 0xabc) {
+            }
+			else if (state._players.members[i].deaths == lowestDeaths) winText = "Draw!";
+			else if (i == state._players.length - 1 && lowestDeaths == 0xabc) {
                 winText = 'Draw!';
             }
         }
@@ -63,7 +65,7 @@ class EndGameState extends FlxState
             var t : FlxText = new FlxText(80 + i*192, 450, 200 - 16 , "", GP.fontSize(6) - 16);
             t.text = "Player: " + Std.string(p._ID);
             t.text += "\nDeaths: " + Std.string(p.deaths);
-            t.text += "\nAvg. Damage: " + Std.string(p.averageDamage);
+            t.text += "\nAvg. Damage: " + Std.string(Std.int(p.averageDamage));
             t.text += "\nMax. Damage: " + Std.string(p._highestDamage);
             t.text += "\nPickups: " + Std.string(p._numberOfPickUps);
 

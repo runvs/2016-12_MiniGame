@@ -4,7 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import openfl.display.BlendMode;
-/**
+/**-
  * ...
  * @author 
  */
@@ -46,7 +46,7 @@ class Shot extends FlxSprite
 	public function colorMe(id:Int) 
 	{
 		firedBy = id;
-		this.color = GP.PCols.get(id);
+		//this.color = GP.PCols.get(id);
 		_glowoverlay.color = this.color;
 	}
 	
