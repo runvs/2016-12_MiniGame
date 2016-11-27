@@ -88,6 +88,7 @@ class StartScreen extends FlxState
                 continue;
             }
             if (input[i].anyPressed) {
+                //var formatJoined : FxtTextFormat = new FxtFormat();
                 _playerTexts[nextToJoin].text = input[i].name + " joined";
                 nextToJoin += 1;
                 alreadyJoined[i] = true;

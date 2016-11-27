@@ -154,8 +154,13 @@ class Player extends FlxSprite
 	function shoot() 
 	{
 		var s : Shot = new Shot();
-		s.x = x;
-		s.y = y;
+        // dimensions of the shot : x = 64; y = 16
+        s.offset.y = s.height/2;
+        s.offset.x = s.width/2;
+        
+        trace(this.angle);
+		s.x = x + (this.width/2) + (this.width/2) * 0;
+		s.y = y + (this.height/2) - (this.height/2)  * 0;
 		
 		var xs : Float = _input.xShootVal.ClampPMSoft();
 		var ys : Float = _input.yShootVal.ClampPMSoft();
