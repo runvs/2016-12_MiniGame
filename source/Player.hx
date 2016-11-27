@@ -302,7 +302,6 @@ class Player extends FlxSprite
 		});
 	}
 
-	
 	public function respawn (first: Bool= false)
 	{
 		_ammunition = 15;

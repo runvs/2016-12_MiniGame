@@ -35,6 +35,8 @@ class PlayState extends FlxState
 	
 	private var _ammunitionSpawnTimer : Float = 5;
 	
+	private var _lifeTime : Float = 0;
+	
 	
 	public function new ()
 	{
@@ -99,6 +101,8 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 	{
+		
+		_lifeTime += elapsed;
 		cleanEffects();
 		_level.cleanShots();
 		_level.cleanAmmu();
@@ -135,6 +139,8 @@ class PlayState extends FlxState
 		
 		if (_inputEnabled)
 		{
+			//FlxG.camera.angle = 2.5 * Math.sin( _lifeTime / Math.PI / 3);
+			
 			for (p in _players)
 			{
 				p.update(elapsed);
