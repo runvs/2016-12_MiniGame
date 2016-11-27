@@ -118,8 +118,8 @@ class PlayState extends FlxState
 			if (p._acceptinput)
 			{
 				
-				var dx = FlxG.width / 2 - p.x ;
-				var dy = FlxG.height/ 2 - p.y ;
+				var dx = FlxG.width / 2 - (p.x + p.width/2) ;
+				var dy = FlxG.height/ 2 - (p.y + p.height/2) ;
 				var r : Float = dx*dx + dy*dy;
 				//trace(_level._radius);
 				if (r > _level._radius * _level._radius)

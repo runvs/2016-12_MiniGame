@@ -227,7 +227,6 @@ class Player extends FlxSprite
 			else
 			{
 				this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
-				
 			}
 		}
 		_lastangle = angle;
