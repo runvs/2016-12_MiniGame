@@ -20,10 +20,10 @@ class PlayerHudBar extends HudBar
         _damageCountText.alignment = RIGHT;
         _damageCountText.color = 0xFFFFFF;
 
-        _background.color = GP.PCols.get(_player._ID);
+       
 
         super(X, Y, w, h, vertical);
-
+		 _background.color = GP.PCols.get(_player._ID);
     }
 
     // _barModulo is the maximum value for one health bar walkthrough
