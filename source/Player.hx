@@ -38,6 +38,7 @@ class Player extends FlxSprite
 	private var shootSound : FlxSound;
 	private var hitSound : FlxSound;
 	private var deathSound : FlxSound;
+	private var pickupSound : FlxSound;
 
 	public var _lastangle : Float = 0;
 
@@ -82,6 +83,7 @@ class Player extends FlxSprite
 		shootSound = FlxG.sound.load(AssetPaths.shoot__wav);
 		hitSound = FlxG.sound.load(AssetPaths.hit__wav);
 		deathSound = FlxG.sound.load(AssetPaths.death__wav);
+		pickupSound = FlxG.sound.load(AssetPaths.snd_dong__wav);
 		
 		var t : FlxTimer = new FlxTimer();
 		t.start(1, 
@@ -317,6 +319,7 @@ class Player extends FlxSprite
 	{
 		_ammunition += 15;
 		_numberOfPickUps += 1;
+		pickupSound.play();
 	}
 	
 	public function die ()
