@@ -74,10 +74,10 @@ class StartScreen extends FlxState
         var format : FlxTextFormat= new FlxTextFormat(0xD81B60);
 
         var subtitleFormat : FlxTextFormat = new FlxTextFormat(0x00bcd4);
-        _gameTitle.font = "assets/data/MECHAG.ttf";
+        _gameTitle.font = "assets/data/MECHAG.TTF";
         _gameTitle = _gameTitle.addFormat(format, -1, -1);
         _gameSubtitle = _gameSubtitle.addFormat(subtitleFormat, 6, 11 );
-        _gameSubtitle.font = "assets/data/MECHAG.ttf";
+        _gameSubtitle.font = "assets/data/MECHAG.TTF";
          add(_gameTitle);
          add(_gameSubtitle);
         
@@ -85,7 +85,7 @@ class StartScreen extends FlxState
          for (player in _playerTexts) {
             add(player);
             // change
-//            player.font = "assets/data/MECHAG.ttf";
+//            player.font = "assets/data/MECHAG.TTF";
          }
          // add the players
 		GP.PCols = new PlayerColors();
