@@ -7,6 +7,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.system.FlxSound;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 using MathExtender;
 
 /**
@@ -31,8 +32,6 @@ class Player extends FlxSprite
 	
 	public var _collideCooldown  : Float = 0;
 	
-	public var deaths : Int = 0;
-	
 	public var _acceptinput : Bool = true;
 	
 	private var shootSound : FlxSound;
@@ -44,6 +43,16 @@ class Player extends FlxSprite
 	public var _ammunition : Int = 15;
 	
 	public var _timeTilSpawn : Float = 0;
+	
+	public var deaths : Int = 0;
+	public var _shotsFired : Int = 0;
+	public var averageDamage : Float;
+	private var _summedDamage : Float = 0;
+	private var _counts : Int = 0;
+	
+	public var _highestDamage :Float = 0;
+	
+	public var _numberOfPickUps : Int = 0;
 	
 	public function new() 
 	{
@@ -70,6 +79,19 @@ class Player extends FlxSprite
 		shootSound = FlxG.sound.load(AssetPaths.shoot__wav);
 		hitSound = FlxG.sound.load(AssetPaths.hit__wav);
 		deathSound = FlxG.sound.load(AssetPaths.death__wav);
+		
+		var t : FlxTimer = new FlxTimer();
+		t.start(1, 
+		function (t) 
+		{
+			_counts += 1; 
+			
+			_summedDamage += _damageTrack; 
+			averageDamage = _summedDamage / _counts; 
+			
+			if (_damageTrack >= _highestDamage) _highestDamage = _damageTrack;
+		}
+		);
 	}
 	
 	public function setState ( state : PlayState, input : BasicInput, id: Int)
@@ -77,9 +99,7 @@ class Player extends FlxSprite
 		_state = state;
 		_input = input;
 		_ID = id;
-		
 		this.x += id * 100;
-
 		colorPlayer();
 		respawn(true);
 	}
@@ -105,6 +125,8 @@ class Player extends FlxSprite
 	
 	override public function update(elapsed:Float):Void 
 	{
+		
+		
 		if (this.color == FlxColor.GRAY)
 		{
 			if (_timeTilSpawn >= GP.PlayerSpawnProtectionTime)
@@ -131,7 +153,6 @@ class Player extends FlxSprite
 		{
 			velocity.set();
 			acceleration.set();
-			
 		}
 		
 		if (_acceptinput)
@@ -157,6 +178,7 @@ class Player extends FlxSprite
 			_ammunition -= 1;
 			var s : Shot = new Shot();
 			
+			_shotsFired += 1;
 			
 			s.x = x ;
 			
@@ -177,8 +199,9 @@ class Player extends FlxSprite
 			_state.spawnShot(s);
 			this._shootTimer = GP.PlayerShootCoolDown * (1 - _damageTrack / 150);
 			if (this._shootTimer <= 0.1) _shootTimer = 0.1;
+			
+			shootSound.pitch = FlxG.random.float(0.85, 1.15);
 			shootSound.play();
-
 		}
 		
 	}
@@ -270,13 +293,9 @@ class Player extends FlxSprite
 		
 		var l : Float = Math.sqrt(xs * xs + ys * ys);
 		
-		
 		s.velocity.x = GP.ShotVelocity * xs/l;
 		s.velocity.y = GP.ShotVelocity * ys/l;
-		
-		
-		
-		
+
 		s.colorMe(_ID);
 		
 		
@@ -285,11 +304,17 @@ class Player extends FlxSprite
 		
 		return this._damageTrack;
 	}
-	
+		
+	public function addAmmu()
+	{
+		_ammunition += 15;
+		_numberOfPickUps += 1;
+	}
 	
 	public function die ()
 	{
 		deathSound.play();
+		if (hitColorTween != null) hitColorTween.cancel();
 		_acceptinput = false;
 		
 		this.animation.play("hit", true);
@@ -299,29 +324,28 @@ class Player extends FlxSprite
 		function(t)
 		{
 			respawn();
-			
 		}
-		
 		});
 	}
-	
+
 	public function respawn (first: Bool= false)
 	{
+		_ammunition = 15;
 		this.scale.set(1, 1);
 		this.alpha = 1;
 		_timeTilSpawn = 0;
 		if (first)
 		{
-			this.setPosition(FlxG.width / 2 + 50 * Math.cos(_ID / 4 * Math.PI) , FlxG.height / 2 + 50 * Math.sin(_ID / 4 * Math.PI));
+			this.setPosition(FlxG.width / 2 + 90 * Math.cos(_ID / 2 * Math.PI) , FlxG.height / 2 + 90 * Math.sin(_ID / 2 * Math.PI));
 			_timeTilSpawn = GP.PlayerSpawnProtectionTime;
 		}
 		else
 		{
-			this.setPosition(FlxG.width / 2 , FlxG.height / 2);
+			this.setPosition(FlxG.width / 2 - this.width/2 , FlxG.height / 2 - this.width/2);
 			this.color = FlxColor.GRAY;			
+		    deaths += 1;
 		}
 		_damageTrack = 0;
-		deaths += 1;
 		_acceptinput = true;
 	}
 
@@ -329,6 +353,7 @@ class Player extends FlxSprite
 	
 	public function hit (s: Shot)
 	{
+		hitSound.pitch = FlxG.random.float(0.85, 1.15);
 		hitSound.play();
 		_collideCooldown = 0.25;
 		
@@ -353,7 +378,7 @@ class Player extends FlxSprite
 	
 	override public function draw():Void 
 	{
-		 super.draw();
+		super.draw();
 	}
 	
 }

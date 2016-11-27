@@ -7,6 +7,7 @@ import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.math.FlxMath;
 import flixel.util.FlxAxes;
+import flixel.util.FlxColor;
 
 class StartScreen extends FlxState
 {
@@ -28,7 +29,8 @@ class StartScreen extends FlxState
 	//private var arr : Array<Int> = new Array<Int>();
 	//private var map : Map<Int, String> = new Map<Int,String>();
 	//
-	//
+	
+	private var _infoText : FlxText;
 	
 	public function getNumberOfPlayersJoined() : Int
 	{
@@ -74,10 +76,10 @@ class StartScreen extends FlxState
         var format : FlxTextFormat= new FlxTextFormat(0xD81B60);
 
         var subtitleFormat : FlxTextFormat = new FlxTextFormat(0x00bcd4);
-        _gameTitle.font = "assets/data/MECHAG.ttf";
+        _gameTitle.font = "assets/data/MECHAG.TTF";
         _gameTitle = _gameTitle.addFormat(format, -1, -1);
         _gameSubtitle = _gameSubtitle.addFormat(subtitleFormat, 6, 11 );
-        _gameSubtitle.font = "assets/data/MECHAG.ttf";
+        _gameSubtitle.font = "assets/data/MECHAG.TTF";
          add(_gameTitle);
          add(_gameSubtitle);
         
@@ -85,7 +87,7 @@ class StartScreen extends FlxState
          for (player in _playerTexts) {
             add(player);
             // change
-//            player.font = "assets/data/MECHAG.ttf";
+//            player.font = "assets/data/MECHAG.TTF";
          }
          // add the players
 		GP.PCols = new PlayerColors();
@@ -97,6 +99,13 @@ class StartScreen extends FlxState
 		_timerText.screenCenter(FlxAxes.X);
 		
 		add(_timerText);
+		
+		_infoText = new FlxText(10, 650, 800,
+	"Created for MiniGameJam in November 2016 by\nThomas Wellmann (graphics), Aldo Brießmann (code)\nStefan Wolf (code), Jonas (code)\nSimon Weis (code)", 
+		8);
+		_infoText.color = FlxColor.GRAY;
+		//_infoText.font = "assets/data/MECHAG.TTF";
+		add(_infoText);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -114,7 +123,7 @@ class StartScreen extends FlxState
 		if (FlxG.keys.justPressed.PAGEDOWN)
 		{
 			_timer -= 5;
-			if (_timer <= 30) _timer = 50;
+			if (_timer <= 30) _timer = 30;
 		}
 		
 		

@@ -15,7 +15,7 @@ class GP
 {
     public static var ScreenWidth (default, null) : Int = 800;
     public static var ScreenHeight (default, null) : Int = 700;
-    public static var gameTime (default, null) : Float = 2;
+    public static var gameTime (default, null) : Float = 120;
     // fontSize: returns 128 / 2^i 
     // -> fontSize(0) is the defined as biggest font (128)
     // -> fontSize(7) is defined as smallest font (16)
@@ -26,7 +26,6 @@ class GP
         }
          
         var i : Int  = 128 - size * 16;
-        //trace('$i');
         return i;
     }
 

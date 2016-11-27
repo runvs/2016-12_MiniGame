@@ -33,6 +33,11 @@ class PlayState extends FlxState
 	
 	private var _inputEnabled : Bool = true;
      
+	private var _ammunitionSpawnTimer : Float = 5;
+	
+	private var _lifeTime : Float = 0;
+	
+	
 	public function new ()
 	{
 		super();
@@ -96,9 +101,11 @@ class PlayState extends FlxState
 
 	override public function update(elapsed:Float):Void
 	{
+		
+		_lifeTime += elapsed;
 		cleanEffects();
 		_level.cleanShots();
-		
+		_level.cleanAmmu();
 		if (_timer > 0)
 		{
 			_timer -= elapsed;
@@ -132,16 +139,39 @@ class PlayState extends FlxState
 		
 		if (_inputEnabled)
 		{
+			//FlxG.camera.angle = 2.5 * Math.sin( _lifeTime / Math.PI / 3);
+			
 			for (p in _players)
 			{
 				p.update(elapsed);
 			}
 			_level._shots.update(elapsed);
+			
+			if (_ammunitionSpawnTimer  > 0)
+			{
+				_ammunitionSpawnTimer -= elapsed;
+				
+			}
+			//trace(_ammunitionSpawnTimer);
+			if (_ammunitionSpawnTimer <= 0)
+			{
+				_ammunitionSpawnTimer = FlxG.random.float(5, 10);
+				SpawnAmmu();
+			}
+			
 		}
 		
 		
 		for (p in _players)
 		{
+			for (crate in _level._amminutionpacks)
+			{
+				if (FlxG.overlap(p, crate))
+				{
+					p.addAmmu();
+					crate.alive = false;
+				}
+			}
 			if (p._timeTilSpawn <= GP.PlayerSpawnProtectionTime) continue;
 			for (s in _level._shots)
 			{
@@ -167,11 +197,23 @@ class PlayState extends FlxState
 		_timerText.text = Std.string(Std.int(_timer) + "." + Std.string(dec));
 	}
     	
+		
+	function SpawnAmmu() 
+	{
+		//trace("spawn");
+		var a : Float = FlxG.random.float(0, Math.PI);
+		var r : Float = FlxG.random.float(0, 1) + FlxG.random.float(0, 1);
+		while (r > 1) r = FlxG.random.float(0, 1) + FlxG.random.float(0, 1);
+		r *= _level._radius;
+		var crate : FlxSprite = new FlxSprite(FlxG.width / 2 + r * Math.cos(a), FlxG.height / 2 + r * Math.sin(a));
+		crate.loadGraphic(AssetPaths.gfx_ammo__png, false, 32, 32);
+		_level._amminutionpacks.add(crate);
+	}
+	
 	function playerhit(p1 : Player, p2 : Player) 
 	{
-      
-		if (p1._collideCooldown <= 0) p1.hit(null);
-		if (p2._collideCooldown <= 0) p2.hit(null);
+		if (p1._acceptinput && p1._collideCooldown <= 0 && (p1._timeTilSpawn > GP.PlayerSpawnProtectionTime)) p1.hit(null);
+		if (p2._acceptinput && p2._collideCooldown <= 0 && (p2._timeTilSpawn > GP.PlayerSpawnProtectionTime)) p2.hit(null);
 	}
 	
 	
@@ -197,9 +239,14 @@ class PlayState extends FlxState
 			p.draw();
 		}
         
-        trace("adfasdfasdfasdffdsf");
-        trace(_level._shots);
+		for (c in _level._amminutionpacks)
+		{
+			c.draw();
+		}
+		
 		_level._shots.draw();
+		
+		
 		_gi.draw();
 		
 		_effects.draw();
