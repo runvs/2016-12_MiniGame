@@ -1,7 +1,9 @@
 package;
 
 import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 using MathExtender;
 
@@ -20,7 +22,7 @@ class Player extends FlxSprite
 	
 	private var _shootTimer : Float = 0;
 
-	
+	private var hitColorTween : FlxTween = null;
 	
 	public function new() 
 	{
@@ -78,6 +80,7 @@ class Player extends FlxSprite
 	override public function update(elapsed:Float):Void 
 	{
 		
+		
 		if (_shootTimer > 0)
 		{
 			_shootTimer -= elapsed;
@@ -132,7 +135,6 @@ class Player extends FlxSprite
 		{
 			this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
 		}
-		//if (Math.abs(_input.xShootVal) > 0.5 || Math.abs(_input.yShootVal) > 0.5 )
 		super.update(elapsed);
 		
 		
@@ -151,10 +153,15 @@ class Player extends FlxSprite
 
 	}
 	
+
+	
 	function shoot() 
 	{
 		var s : Shot = new Shot();
-		s.x = x;
+		
+		
+		s.x = x ;
+		
 		s.y = y;
 		
 		var xs : Float = _input.xShootVal.ClampPMSoft();
@@ -190,6 +197,15 @@ class Player extends FlxSprite
 
 	public function hit ()
 	{
+		if (hitColorTween == null || hitColorTween.finished)
+		{
+			hitColorTween = FlxTween.color(this, 0.25, FlxColor.RED, FlxColor.WHITE);
+		}
+		else 
+		{
+			hitColorTween.cancel();
+			hitColorTween = FlxTween.color(this, 0.25, FlxColor.RED, FlxColor.WHITE);
+		}
 		_damageTrack += GP.PlayerDamageTrackIncrease;
 	}
 	
