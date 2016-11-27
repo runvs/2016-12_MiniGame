@@ -311,12 +311,12 @@ class Player extends FlxSprite
 		_timeTilSpawn = 0;
 		if (first)
 		{
-			this.setPosition(FlxG.width / 2 + 50 * Math.cos(_ID / 4 * Math.PI) , FlxG.height / 2 + 50 * Math.sin(_ID / 4 * Math.PI));
+			this.setPosition(FlxG.width / 2 + 90 * Math.cos(_ID / 4 * Math.PI) , FlxG.height / 2 + 90 * Math.sin(_ID / 4 * Math.PI));
 			_timeTilSpawn = GP.PlayerSpawnProtectionTime;
 		}
 		else
 		{
-			this.setPosition(FlxG.width / 2 , FlxG.height / 2);
+			this.setPosition(FlxG.width / 2 - this.width/2 , FlxG.height / 2 - this.width/2);
 			this.color = FlxColor.GRAY;			
 		}
 		_damageTrack = 0;
