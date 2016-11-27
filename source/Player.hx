@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.system.FlxSound;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 using MathExtender;
@@ -34,6 +35,9 @@ class Player extends FlxSprite
 	
 	public var _acceptinput : Bool = true;
 	
+	private var shootSound : FlxSound;
+	private var hitSound : FlxSound;
+	private var deathSound : FlxSound;
 	
 	public function new() 
 	{
@@ -57,7 +61,9 @@ class Player extends FlxSprite
 		_damageTrack = 0;
 		
 		
-		
+		shootSound = FlxG.sound.load(AssetPaths.shoot__wav);
+		hitSound = FlxG.sound.load(AssetPaths.hit__wav);
+		deathSound = FlxG.sound.load(AssetPaths.death__wav);
 	}
 	
 	public function setState ( state : PlayState, input : BasicInput, id: Int)
@@ -134,6 +140,7 @@ class Player extends FlxSprite
 	
 	function shoot() 
 	{
+		shootSound.play();
 		var s : Shot = new Shot();
 		
 		
@@ -228,6 +235,7 @@ class Player extends FlxSprite
 	
 	public function die ()
 	{
+		deathSound.play();
 		_acceptinput = false;
 		
 		FlxTween.tween(this, { alpha: 0 }, 0.75);
@@ -255,6 +263,7 @@ class Player extends FlxSprite
 	
 	public function hit (s: Shot)
 	{
+		hitSound.play();
 		_collideCooldown = 0.25;
 		
 		if (hitColorTween == null || hitColorTween.finished)
