@@ -177,6 +177,8 @@ class Player extends FlxSprite
 			_state.spawnShot(s);
 			this._shootTimer = GP.PlayerShootCoolDown * (1 - _damageTrack / 150);
 			if (this._shootTimer <= 0.1) _shootTimer = 0.1;
+			
+			shootSound.pitch = FlxG.random.float(0.85, 1.15);
 			shootSound.play();
 
 		}
@@ -329,6 +331,7 @@ class Player extends FlxSprite
 	
 	public function hit (s: Shot)
 	{
+		hitSound.pitch = FlxG.random.float(0.85, 1.15);
 		hitSound.play();
 		_collideCooldown = 0.25;
 		
