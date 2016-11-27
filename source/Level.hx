@@ -47,5 +47,15 @@ class Level
 	
 		_shots = slist;
 	}
+	public function cleanAmmu() 
+	{
+		var alist : FlxSpriteGroup = new FlxSpriteGroup();
+		for (a in _amminutionpacks)
+		{
+			if (a.alive) alist.add(a);
+		}
+	
+		_amminutionpacks = alist;
+	}
 		
 }

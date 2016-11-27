@@ -33,6 +33,8 @@ class PlayState extends FlxState
 	
 	private var _inputEnabled : Bool = true;
 	
+	private var _ammunitionSpawnTimer : Float = 25;
+	
 	
 	public function new ()
 	{
@@ -98,7 +100,7 @@ class PlayState extends FlxState
 	{
 		cleanEffects();
 		_level.cleanShots();
-		
+		_level.cleanAmmu();
 		if (_timer > 0)
 		{
 			_timer -= elapsed;
@@ -138,11 +140,30 @@ class PlayState extends FlxState
 				p.update(elapsed);
 			}
 			_level._shots.update(elapsed);
+			
+			if (_ammunitionSpawnTimer  > 0)
+			{
+				_ammunitionSpawnTimer -= elapsed;
+				if (_ammunitionSpawnTimer <= 0)
+				{
+					_ammunitionSpawnTimer = FlxG.random.float(10, 15);
+					SpawnAmmu();
+				}
+			}
+			
 		}
 		
 		
 		for (p in _players)
 		{
+			for (crate in _level._amminutionpacks)
+			{
+				if (FlxG.overlap(p, crate))
+				{
+					p.addAmmu();
+					crate.alive = false;
+				}
+			}
 			if (p._timeTilSpawn <= GP.PlayerSpawnProtectionTime) continue;
 			for (s in _level._shots)
 			{
@@ -166,6 +187,16 @@ class PlayState extends FlxState
 		var dec: Int = Std.int((_timer * 10) % 10);
 		if (dec < 0) dec *= -1;
 		_timerText.text = Std.string(Std.int(_timer) + "." + Std.string(dec));
+	}
+	
+	function SpawnAmmu() 
+	{
+		var a : Float = FlxG.random.float(0, Math.PI);
+		var r : Float = FlxG.random.float(0, 1) + FlxG.random.float(0, 1);
+		while (r > 1) r = FlxG.random.float(0, 1) + FlxG.random.float(0, 1);
+		var crate : FlxSprite = new FlxSprite(FlxG.width / 2 + r * Math.cos(a), FlxG.height / 2 + r * Math.sin(a));
+		
+		_level._amminutionpacks.add(crate);
 	}
 	
 	function playerhit(p1 : Player, p2 : Player) 

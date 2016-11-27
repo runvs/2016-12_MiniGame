@@ -295,6 +295,11 @@ class Player extends FlxSprite
 		});
 	}
 	
+	public function addAmmu()
+	{
+		_ammunition += 15;
+	}
+	
 	public function respawn (first: Bool= false)
 	{
 		_ammunition = 15;
