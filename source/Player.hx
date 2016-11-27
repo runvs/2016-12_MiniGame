@@ -1,7 +1,10 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 using MathExtender;
 
@@ -20,11 +23,23 @@ class Player extends FlxSprite
 	
 	private var _shootTimer : Float = 0;
 
+	private var hitColorTween : FlxTween = null;
+	
+	private var accsummedX : Float = 0;
+	private var accsummedY : Float = 0;
+	
+	public var _collideCooldown  : Float = 0;
+	
+	public var deaths : Int = 0;
+	
+	public var _acceptinput : Bool = true;
+	
+	public var _lastangle : Float = 0;
 	
 	
 	public function new() 
 	{
-		super();
+		super(FlxG.width/2, FlxG.height/2);
 		
 		
 		/// graphic stuff 
@@ -39,9 +54,11 @@ class Player extends FlxSprite
 		// movement stuff
 		this.drag.set(GP.PlayerDrag, GP.PlayerDrag);
 		this.maxVelocity.set(GP.PlayerMaxVelocity, GP.PlayerMaxVelocity);
-		this.elasticity = 0.0;
+		this.elasticity = 1.0;
 		
 		_damageTrack = 0;
+		
+		
 		
 	}
 	
@@ -54,6 +71,7 @@ class Player extends FlxSprite
 		this.x += id * 100;
 
 		colorPlayer();
+		respawn();
 	}
 	
 	function colorPlayer() 
@@ -78,6 +96,7 @@ class Player extends FlxSprite
 	override public function update(elapsed:Float):Void 
 	{
 		
+		_collideCooldown -= elapsed;
 		if (_shootTimer > 0)
 		{
 			_shootTimer -= elapsed;
@@ -86,13 +105,71 @@ class Player extends FlxSprite
 		
 		calculateElasticity();
 		
+		if (_acceptinput)
+		{
+			handleInputAndMovement(elapsed);
+		}
+		else
+		{
+			velocity.set();
+			acceleration.set();
+			
+		}
+		
+		if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
+		{
+			this.animation.play("walk");
+		}
+		else
+		{
+			this.animation.play("idle");
+		}
+		 
+		
+		
+		
+		//trace(this.acceleration);
+
+	}
+	
+
+	
+	function shoot() 
+	{
+		var s : Shot = new Shot();
+		
+		
+		s.x = x ;
+		
+		s.y = y;
+		
+		var xs : Float = _input.xShootVal.ClampPMSoft();
+		var ys : Float = _input.yShootVal.ClampPMSoft();
+		s.angle = Math.atan2(ys, xs).Rad2Deg();
+		
+		var l : Float = Math.sqrt(xs * xs + ys * ys);
+		
+		
+		s.velocity.x = GP.ShotVelocity * xs/l + velocity.x/2;
+		s.velocity.y = GP.ShotVelocity * ys/l + velocity.y/2; 
+		
+		s.colorMe(_ID);
+
+		_state.spawnShot(s);
+		this._shootTimer = GP.PlayerShootCoolDown * (1 - _damageTrack / 150);
+		if (this._shootTimer <= 0.1) _shootTimer = 0.1;
+	}
+	
+	function calculateElasticity() 
+	{
+		this.elasticity = 1.0 +  _damageTrack / 35;
+	}
+	
+	function handleInputAndMovement(elapsed : Float):Void 
+	{
 		this.acceleration.x = this.acceleration.y = 0;
 		
 		_input.update(elapsed);
-		
-
-		
-		
 		var xs : Float = _input.xShootVal.ClampPMSoft();
 		var ys : Float = _input.yShootVal.ClampPMSoft();
 	
@@ -106,8 +183,6 @@ class Player extends FlxSprite
 		var vxs : Bool = velocity.x > 0;
 		var vys : Bool = velocity.y > 0;
 		
-		//if (axs != vxs) velocity.x *= -0.5;
-		//if (ays != vys) velocity.y *= -0.5;
 		if (axs != vxs) acceleration.x *= 4;
 		if (ays != vys) acceleration.y *= 4;
 		
@@ -130,28 +205,33 @@ class Player extends FlxSprite
 		}
 		else
 		{
-			this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
+			if (velocity.y == 0 && velocity.x == 0)
+			{
+				this.angle = _lastangle;
+			}
+			else
+			{
+				this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
+				
+			}
 		}
-		//if (Math.abs(_input.xShootVal) > 0.5 || Math.abs(_input.yShootVal) > 0.5 )
+		_lastangle = angle;
+	
+		if (accsummedX > 3000) accsummedX = 3000;
+		if (accsummedX < -3000) accsummedX = -3000;
+		if (accsummedY > 3000) accsummedY = 3000;
+		if (accsummedY < -3000) accsummedY = -3000;
+		velocity.x += accsummedX;
+		velocity.y += accsummedY;
+		
 		super.update(elapsed);
 		
-		
-		if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
-		{
-			this.animation.play("walk");
-		}
-		else
-		{
-			this.animation.play("idle");
-		}
-		
-
-		 
-		//trace(this.acceleration);
-
+		accsummedX = accsummedY = 0;
 	}
 	
-	function shoot() 
+	
+	
+	public function getDamageTrack()
 	{
 		var s : Shot = new Shot();
         // dimensions of the shot : x = 64; y = 16
@@ -181,20 +261,57 @@ class Player extends FlxSprite
 		_state.spawnShot(s);
 		this._shootTimer = GP.PlayerShootCoolDown;
 		
-	}
-	
-	function calculateElasticity() 
-	{
-		this.elasticity = _damageTrack / 50;
-	}
-	
-	public function getDamageTrack()
-	{
 		return this._damageTrack;
 	}
-
-	public function hit ()
+	
+	
+	public function die ()
 	{
+		_acceptinput = false;
+		
+		FlxTween.tween(this, { alpha: 0 }, 0.75);
+		FlxTween.tween(this.scale, { x: 0, y: 0 }, 0.75, { onComplete:
+		function(t)
+		{
+			respawn();
+			
+		}
+		
+		});
+	}
+	
+	public function respawn ()
+	{
+		this.scale.set(1, 1);
+		this.alpha = 1;
+		this.setPosition(FlxG.width / 2 + 50 * Math.cos(_ID/4*Math.PI) , FlxG.height / 2+ 50 * Math.sin(_ID/4*Math.PI));
+		_damageTrack = 0;
+		deaths += 1;
+		_acceptinput = true;
+	}
+
+	
+	
+	public function hit (s: Shot)
+	{
+		_collideCooldown = 0.25;
+		
+		if (hitColorTween == null || hitColorTween.finished)
+		{
+			hitColorTween = FlxTween.color(this, 0.25, FlxColor.RED, FlxColor.WHITE);
+		}
+		else 
+		{
+			hitColorTween.cancel();
+			hitColorTween = FlxTween.color(this, 0.25, FlxColor.RED, FlxColor.WHITE);
+		}
+	
+		if (s != null)
+		{
+			//trace(s.velocity);
+			accsummedX = s.velocity.x * elasticity * 4;
+			accsummedY = s.velocity.y * elasticity * 4;
+		}
 		_damageTrack += GP.PlayerDamageTrackIncrease;
 	}
 	

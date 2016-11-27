@@ -6,6 +6,7 @@ import flixel.FlxState;
 import flixel.text.FlxText;
 import flixel.ui.FlxButton;
 import flixel.math.FlxMath;
+import flixel.util.FlxAxes;
 
 class StartScreen extends FlxState
 {
@@ -15,6 +16,10 @@ class StartScreen extends FlxState
     private var _playerTexts : Array<FlxText> = new Array<FlxText>();
   	private var t : Float = 0;
     private var input : Array<BasicInput>; 
+	
+	private var _timerText : FlxText; 
+	private var _timer : Float = 120;
+	
     
     // the next player to join
     private var nextToJoin : Int  = 0;
@@ -24,6 +29,17 @@ class StartScreen extends FlxState
 	//private var map : Map<Int, String> = new Map<Int,String>();
 	//
 	//
+	
+	public function getNumberOfPlayersJoined() : Int
+	{
+		var numberOfJoinedPlayers : Int = 0;
+		for (b in alreadyJoined)
+		{
+			if (b) numberOfJoinedPlayers += 1;
+		}
+		
+		return numberOfJoinedPlayers;
+	}
 	
 	override public function create():Void
 	{
@@ -68,17 +84,35 @@ class StartScreen extends FlxState
          }
          // add the players
 		GP.PCols = new PlayerColors();
-		//_startText = new FlxText( 100, 100, 0, "pushover, press Space to start", 16);
-        // contains the "player<x>: press A to join" messages
-        //_playerText = new Array<String>();
-		//add(_startText);
-        //add(_playerText);	
+
+		
+		_timerText = new FlxText(0, 500, 0, 
+		"Game Time: " + Std.string(Std.int(_timer)) + " [PgnUp], [PgnDwn]", 
+		16);
+		_timerText.screenCenter(FlxAxes.X);
+		
+		add(_timerText);
 	}
 
 	override public function update(elapsed:Float):Void
 	{
 	   super.update(elapsed);
-        t += elapsed *8;
+        t += elapsed * 8;
+		
+		_timerText.text = "Game Time: " + Std.string(Std.int(_timer)) + " [PgnUp], [PgnDwn]";
+		
+		if (FlxG.keys.justPressed.PAGEUP)
+		{
+			_timer += 5;
+			if (_timer >= 600) _timer = 600;
+		}
+		if (FlxG.keys.justPressed.PAGEDOWN)
+		{
+			_timer -= 5;
+			if (_timer <= 30) _timer = 50;
+		}
+		
+		
        // nice shiat
        _gameSubtitle.size = Std.int(GP.fontSize(6) - 4 * Math.sin(t));
         
@@ -96,14 +130,18 @@ class StartScreen extends FlxState
         }
 		if (FlxG.keys.pressed.SPACE)
 		{
-            var p : PlayState = new PlayState();
-            for (i in 0 ... alreadyJoined.length) {
-               if (alreadyJoined[i]) {
-                    p.addPlayer(input[i].name);
-               } 
-            }
+			if (getNumberOfPlayersJoined() >= 2)
+			{				
+				var p : PlayState = new PlayState();
+				for (i in 0 ... alreadyJoined.length) {
+				   if (alreadyJoined[i]) {
+						p.addPlayer(input[i].name);
+				   } 
+				}
 
-			FlxG.switchState(p);
+				p.setTimer(_timer);
+				FlxG.switchState(p);
+			}
 		}
 	}
 	
