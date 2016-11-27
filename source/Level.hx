@@ -19,22 +19,13 @@ class Level
 	
 	public var _radius : Float = 0;
 	
+	public var _amminutionpacks : FlxSpriteGroup;
 	
 	
 	public function new() 
 	{
 		_shots = new FlxTypedGroup<Shot>();
-	}
-	
-	public function cleanShots() 
-	{
-		var slist : FlxTypedGroup<Shot> = new FlxTypedGroup<Shot>();
-		for (s in _shots)
-		{
-			if (s.alive) slist.add(s);
-		}
-		
-		_shots = slist;
+		_amminutionpacks = new FlxSpriteGroup();
 		
 		_pieces = new FlxSpriteGroup();
 		
@@ -46,4 +37,25 @@ class Level
 		_pieces.add(circle);
 	}
 	
+	public function cleanShots() 
+	{
+		var slist : FlxTypedGroup<Shot> = new FlxTypedGroup<Shot>();
+		for (s in _shots)
+		{
+			if (s.alive) slist.add(s);
+		}
+	
+		_shots = slist;
+	}
+	public function cleanAmmu() 
+	{
+		var alist : FlxSpriteGroup = new FlxSpriteGroup();
+		for (a in _amminutionpacks)
+		{
+			if (a.alive) alist.add(a);
+		}
+	
+		_amminutionpacks = alist;
+	}
+		
 }
