@@ -7,6 +7,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.system.FlxSound;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 using MathExtender;
 
 /**
@@ -31,8 +32,6 @@ class Player extends FlxSprite
 	
 	public var _collideCooldown  : Float = 0;
 	
-	public var deaths : Int = 0;
-	
 	public var _acceptinput : Bool = true;
 	
 	private var shootSound : FlxSound;
@@ -44,6 +43,16 @@ class Player extends FlxSprite
 	public var _ammunition : Int = 15;
 	
 	public var _timeTilSpawn : Float = 0;
+	
+	public var deaths : Int = 0;
+	public var _shotsFired : Int = 0;
+	public var averageDamage : Float;
+	private var _summedDamage : Float = 0;
+	private var _counts : Int = 0;
+	
+	public var _highestDamage :Float = 0;
+	
+	public var _numberOfPickUps : Int = 0;
 	
 	public function new() 
 	{
@@ -70,6 +79,19 @@ class Player extends FlxSprite
 		shootSound = FlxG.sound.load(AssetPaths.shoot__wav);
 		hitSound = FlxG.sound.load(AssetPaths.hit__wav);
 		deathSound = FlxG.sound.load(AssetPaths.death__wav);
+		
+		var t : FlxTimer = new FlxTimer();
+		t.start(1, 
+		function (t) 
+		{
+			_counts += 1; 
+			
+			_summedDamage += _damageTrack; 
+			averageDamage = _summedDamage / _counts; 
+			
+			if (_damageTrack >= _highestDamage) _highestDamage = _damageTrack;
+		}
+		);
 	}
 	
 	public function setState ( state : PlayState, input : BasicInput, id: Int)
@@ -103,6 +125,8 @@ class Player extends FlxSprite
 	
 	override public function update(elapsed:Float):Void 
 	{
+		
+		
 		if (this.color == FlxColor.GRAY)
 		{
 			if (_timeTilSpawn >= GP.PlayerSpawnProtectionTime)
@@ -154,6 +178,7 @@ class Player extends FlxSprite
 			_ammunition -= 1;
 			var s : Shot = new Shot();
 			
+			_shotsFired += 1;
 			
 			s.x = x ;
 			
@@ -283,6 +308,7 @@ class Player extends FlxSprite
 	public function addAmmu()
 	{
 		_ammunition += 15;
+		_numberOfPickUps += 1;
 	}
 	
 	public function die ()
@@ -310,7 +336,7 @@ class Player extends FlxSprite
 		_timeTilSpawn = 0;
 		if (first)
 		{
-			this.setPosition(FlxG.width / 2 + 90 * Math.cos(_ID / 4 * Math.PI) , FlxG.height / 2 + 90 * Math.sin(_ID / 4 * Math.PI));
+			this.setPosition(FlxG.width / 2 + 90 * Math.cos(_ID / 2 * Math.PI) , FlxG.height / 2 + 90 * Math.sin(_ID / 2 * Math.PI));
 			_timeTilSpawn = GP.PlayerSpawnProtectionTime;
 		}
 		else
