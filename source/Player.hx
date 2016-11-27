@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.system.FlxSound;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 using MathExtender;
@@ -34,12 +35,15 @@ class Player extends FlxSprite
 	
 	public var _acceptinput : Bool = true;
 	
+	private var shootSound : FlxSound;
+	private var hitSound : FlxSound;
+	private var deathSound : FlxSound;
+
 	public var _lastangle : Float = 0;
-	
+
 	public var _ammunition : Int = 15;
 	
 	public var _timeTilSpawn : Float = 0;
-	
 	
 	public function new() 
 	{
@@ -63,7 +67,9 @@ class Player extends FlxSprite
 		_damageTrack = 0;
 		
 		
-		
+		shootSound = FlxG.sound.load(AssetPaths.shoot__wav);
+		hitSound = FlxG.sound.load(AssetPaths.hit__wav);
+		deathSound = FlxG.sound.load(AssetPaths.death__wav);
 	}
 	
 	public function setState ( state : PlayState, input : BasicInput, id: Int)
@@ -171,6 +177,8 @@ class Player extends FlxSprite
 			_state.spawnShot(s);
 			this._shootTimer = GP.PlayerShootCoolDown * (1 - _damageTrack / 150);
 			if (this._shootTimer <= 0.1) _shootTimer = 0.1;
+			shootSound.play();
+
 		}
 		
 	}
@@ -281,6 +289,7 @@ class Player extends FlxSprite
 	
 	public function die ()
 	{
+		deathSound.play();
 		_acceptinput = false;
 		
 		this.animation.play("hit", true);
@@ -320,6 +329,7 @@ class Player extends FlxSprite
 	
 	public function hit (s: Shot)
 	{
+		hitSound.play();
 		_collideCooldown = 0.25;
 		
 		if (hitColorTween == null || hitColorTween.finished)
