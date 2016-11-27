@@ -67,20 +67,25 @@ class StartScreen extends FlxState
 
         // tasty spaghetti incoming!
 		_gameTitle = new FlxText(0, GP.fontSize(2), GP.ScreenWidth, "pushover\n", GP.fontSize(2));
-        _gameSubtitle = new FlxText(0, GP.fontSize(2)*2.3, GP.ScreenWidth, "Press SPACE to start", GP.fontSize(6));
+        _gameSubtitle = new FlxText(0, GP.fontSize(2)*2.3, GP.ScreenWidth, "Press space to start", GP.fontSize(6));
 	    _gameTitle.alignment = "center";	
         _gameSubtitle.alignment = "center";
 
         var format : FlxTextFormat= new FlxTextFormat(0xD81B60);
+
         var subtitleFormat : FlxTextFormat = new FlxTextFormat(0x00bcd4);
+        _gameTitle.font = "assets/data/MECHAG.ttf";
         _gameTitle = _gameTitle.addFormat(format, -1, -1);
         _gameSubtitle = _gameSubtitle.addFormat(subtitleFormat, 6, 11 );
+        _gameSubtitle.font = "assets/data/MECHAG.ttf";
          add(_gameTitle);
          add(_gameSubtitle);
         
          
          for (player in _playerTexts) {
             add(player);
+            // change
+//            player.font = "assets/data/MECHAG.ttf";
          }
          // add the players
 		GP.PCols = new PlayerColors();

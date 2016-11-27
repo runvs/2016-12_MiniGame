@@ -74,7 +74,8 @@ class PlayState extends FlxState
 		_gi = new GameInterface(_playersArray);
 		_level = new Level();
 		
-		_timerText = new FlxText(0, 0, 0, "", 28);
+        _timerText = new FlxText(0, 0, FlxG.width, "", 28);
+        _timerText.font = "assets/data/MECHAG.ttf";
 		_timerText.alignment = FlxTextAlign.CENTER;
 		_timerText.screenCenter(FlxAxes.X);
 		_timerText.y = 16;
@@ -110,7 +111,6 @@ class PlayState extends FlxState
 		}
 		
 		super.update(elapsed);
-		
 		FlxG.collide(_players, _players, playerhit);
 		
 		for (p in _players)
