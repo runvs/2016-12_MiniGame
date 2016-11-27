@@ -146,7 +146,7 @@ class PlayState extends FlxState
 				_ammunitionSpawnTimer -= elapsed;
 				
 			}
-			trace(_ammunitionSpawnTimer);
+			//trace(_ammunitionSpawnTimer);
 			if (_ammunitionSpawnTimer <= 0)
 			{
 				_ammunitionSpawnTimer = FlxG.random.float(5, 10);
@@ -193,7 +193,7 @@ class PlayState extends FlxState
 	
 	function SpawnAmmu() 
 	{
-		trace("spawn");
+		//trace("spawn");
 		var a : Float = FlxG.random.float(0, Math.PI);
 		var r : Float = FlxG.random.float(0, 1) + FlxG.random.float(0, 1);
 		while (r > 1) r = FlxG.random.float(0, 1) + FlxG.random.float(0, 1);
