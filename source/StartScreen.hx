@@ -114,7 +114,7 @@ class StartScreen extends FlxState
 		if (FlxG.keys.justPressed.PAGEDOWN)
 		{
 			_timer -= 5;
-			if (_timer <= 30) _timer = 50;
+			if (_timer <= 30) _timer = 30;
 		}
 		
 		
