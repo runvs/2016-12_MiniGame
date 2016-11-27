@@ -106,6 +106,10 @@ class StartScreen extends FlxState
 		_infoText.color = FlxColor.GRAY;
 		//_infoText.font = "assets/data/MECHAG.TTF";
 		add(_infoText);
+    
+     if (FlxG.sound.music == null)  {
+        FlxG.sound.playMusic("assets/music/Videogame2.wav", 1, true);
+     }
 	}
 
 	override public function update(elapsed:Float):Void
