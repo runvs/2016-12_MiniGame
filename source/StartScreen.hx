@@ -25,6 +25,17 @@ class StartScreen extends FlxState
 	//
 	//
 	
+	public function getNumberOfPlayersJoined() : Int
+	{
+		var numberOfJoinedPlayers : Int = 0;
+		for (b in alreadyJoined)
+		{
+			if (b) numberOfJoinedPlayers += 1;
+		}
+		
+		return numberOfJoinedPlayers;
+	}
+	
 	override public function create():Void
 	{
 		super.create();
@@ -95,14 +106,17 @@ class StartScreen extends FlxState
         }
 		if (FlxG.keys.pressed.SPACE)
 		{
-            var p : PlayState = new PlayState();
-            for (i in 0 ... alreadyJoined.length) {
-               if (alreadyJoined[i]) {
-                    p.addPlayer(input[i].name);
-               } 
-            }
+			if (getNumberOfPlayersJoined() >= 2)
+			{				
+				var p : PlayState = new PlayState();
+				for (i in 0 ... alreadyJoined.length) {
+				   if (alreadyJoined[i]) {
+						p.addPlayer(input[i].name);
+				   } 
+				}
 
-			FlxG.switchState(p);
+				FlxG.switchState(p);
+			}
 		}
 	}
 	
