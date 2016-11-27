@@ -197,6 +197,7 @@ class PlayState extends FlxState
 		var a : Float = FlxG.random.float(0, Math.PI);
 		var r : Float = FlxG.random.float(0, 1) + FlxG.random.float(0, 1);
 		while (r > 1) r = FlxG.random.float(0, 1) + FlxG.random.float(0, 1);
+		r *= _level._radius;
 		var crate : FlxSprite = new FlxSprite(FlxG.width / 2 + r * Math.cos(a), FlxG.height / 2 + r * Math.sin(a));
 		
 		_level._amminutionpacks.add(crate);
