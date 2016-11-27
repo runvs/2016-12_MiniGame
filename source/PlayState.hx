@@ -112,6 +112,28 @@ class PlayState extends FlxState
 		
 		FlxG.collide(_players, _players, playerhit);
 		
+		for (p in _players)
+		{
+			if (p._acceptinput)
+			{
+				var onlevel : Bool = false;
+				for (l in _level._pieces)
+				{
+					if (onlevel) continue;
+					
+					if (FlxG.pixelPerfectOverlap(p, l, 1))
+					{
+						onlevel = true;
+					}
+				}
+				if (!onlevel)
+				{
+					p.die();
+				}
+			}
+		}
+		
+		
 		
 		if (_inputEnabled)
 		{
@@ -130,15 +152,12 @@ class PlayState extends FlxState
 				if (s.alive == false) continue;
 				if (s.firedBy == p._ID) continue;
 				
-
 				if ( FlxG.overlap(p, s))
 				{
 					p.hit(s);
 					FlxObject.separate(p, s);
 					s.alive = false;
 					spawnHit(s);
-					
-					
 				}
 			}
 		}
@@ -173,6 +192,7 @@ class PlayState extends FlxState
 	
 	override public function draw () : Void 
 	{
+		_level._pieces.draw();
 		super.draw();
 			for (p in _players)
 		{

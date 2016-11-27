@@ -30,9 +30,14 @@ class Player extends FlxSprite
 	
 	public var _collideCooldown  : Float = 0;
 	
+	public var deaths : Int = 0;
+	
+	public var _acceptinput : Bool = true;
+	
+	
 	public function new() 
 	{
-		super();
+		super(FlxG.width/2, FlxG.height/2);
 		
 		
 		/// graphic stuff 
@@ -51,6 +56,8 @@ class Player extends FlxSprite
 		
 		_damageTrack = 0;
 		
+		
+		
 	}
 	
 	public function setState ( state : PlayState, input : BasicInput, id: Int)
@@ -62,6 +69,7 @@ class Player extends FlxSprite
 		this.x += id * 100;
 
 		colorPlayer();
+		respawn();
 	}
 	
 	function colorPlayer() 
@@ -87,8 +95,6 @@ class Player extends FlxSprite
 	{
 		
 		_collideCooldown -= elapsed;
-		
-		
 		if (_shootTimer > 0)
 		{
 			_shootTimer -= elapsed;
@@ -97,63 +103,16 @@ class Player extends FlxSprite
 		
 		calculateElasticity();
 		
-		this.acceleration.x = this.acceleration.y = 0;
-		
-		_input.update(elapsed);
-		
-
-		
-		
-		var xs : Float = _input.xShootVal.ClampPMSoft();
-		var ys : Float = _input.yShootVal.ClampPMSoft();
-	
-		
-		this.acceleration.x = _input.xVal * GP.PlayerAccelerationFactor;
-		this.acceleration.y = _input.yVal * GP.PlayerAccelerationFactor;
-		
-		var axs : Bool = acceleration.x > 0;
-		var ays : Bool = acceleration.y > 0;
-		
-		var vxs : Bool = velocity.x > 0;
-		var vys : Bool = velocity.y > 0;
-		
-		//if (axs != vxs) velocity.x *= -0.5;
-		//if (ays != vys) velocity.y *= -0.5;
-		if (axs != vxs) acceleration.x *= 4;
-		if (ays != vys) acceleration.y *= 4;
-		
-		var velAbs : Float = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-		if ( velAbs > GP.PlayerMaxVelocity)
+		if (_acceptinput)
 		{
-			velocity.x /= velAbs / GP.PlayerMaxVelocity;
-			velocity.y /= velAbs / GP.PlayerMaxVelocity;
-		}
-		
-		
-		var RTabs = Math.sqrt(xs * xs + ys * ys);
-		if (RTabs > 0.4)
-		{
-			this.angle = - 90 +  Math.atan2(ys, xs).Rad2Deg();
-			if (_shootTimer <= 0 )
-			{
-				shoot();
-			}
+			handleInputAndMovement(elapsed);
 		}
 		else
 		{
-			this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
+			velocity.set();
+			acceleration.set();
+			
 		}
-	
-		if (accsummedX > 3000) accsummedX = 3000;
-		if (accsummedX < -3000) accsummedX = -3000;
-		if (accsummedY > 3000) accsummedY = 3000;
-		if (accsummedY < -3000) accsummedY = -3000;
-		velocity.x += accsummedX;
-		velocity.y += accsummedY;
-		
-		super.update(elapsed);
-		
-		accsummedX = accsummedY = 0;
 		
 		if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
 		{
@@ -163,9 +122,10 @@ class Player extends FlxSprite
 		{
 			this.animation.play("idle");
 		}
-		
-
 		 
+		
+		
+		
 		//trace(this.acceleration);
 
 	}
@@ -203,6 +163,61 @@ class Player extends FlxSprite
 		this.elasticity = 0.5 +  _damageTrack / 35;
 	}
 	
+	function handleInputAndMovement(elapsed : Float):Void 
+	{
+		this.acceleration.x = this.acceleration.y = 0;
+		
+		_input.update(elapsed);
+		var xs : Float = _input.xShootVal.ClampPMSoft();
+		var ys : Float = _input.yShootVal.ClampPMSoft();
+	
+		
+		this.acceleration.x = _input.xVal * GP.PlayerAccelerationFactor;
+		this.acceleration.y = _input.yVal * GP.PlayerAccelerationFactor;
+		
+		var axs : Bool = acceleration.x > 0;
+		var ays : Bool = acceleration.y > 0;
+		
+		var vxs : Bool = velocity.x > 0;
+		var vys : Bool = velocity.y > 0;
+		
+		if (axs != vxs) acceleration.x *= 4;
+		if (ays != vys) acceleration.y *= 4;
+		
+		var velAbs : Float = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+		if ( velAbs > GP.PlayerMaxVelocity)
+		{
+			velocity.x /= velAbs / GP.PlayerMaxVelocity;
+			velocity.y /= velAbs / GP.PlayerMaxVelocity;
+		}
+		
+		
+		var RTabs = Math.sqrt(xs * xs + ys * ys);
+		if (RTabs > 0.4)
+		{
+			this.angle = - 90 +  Math.atan2(ys, xs).Rad2Deg();
+			if (_shootTimer <= 0 )
+			{
+				shoot();
+			}
+		}
+		else
+		{
+			this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
+		}
+	
+		if (accsummedX > 3000) accsummedX = 3000;
+		if (accsummedX < -3000) accsummedX = -3000;
+		if (accsummedY > 3000) accsummedY = 3000;
+		if (accsummedY < -3000) accsummedY = -3000;
+		velocity.x += accsummedX;
+		velocity.y += accsummedY;
+		
+		super.update(elapsed);
+		
+		accsummedX = accsummedY = 0;
+	}
+	
 	
 	
 	public function getDamageTrack()
@@ -210,10 +225,30 @@ class Player extends FlxSprite
 		return this._damageTrack;
 	}
 	
+	
+	public function die ()
+	{
+		_acceptinput = false;
+		
+		FlxTween.tween(this, { alpha: 0 }, 0.75);
+		FlxTween.tween(this.scale, { x: 0, y: 0 }, 0.75, { onComplete:
+		function(t)
+		{
+			respawn();
+			
+		}
+		
+		});
+	}
+	
 	public function respawn ()
 	{
-		this.setPosition(FlxG.width / 2, FlxG.height / 2);
+		this.scale.set(1, 1);
+		this.alpha = 1;
+		this.setPosition(FlxG.width / 2 + 50 * Math.cos(_ID/4*Math.PI) , FlxG.height / 2+ 50 * Math.sin(_ID/4*Math.PI));
 		_damageTrack = 0;
+		deaths += 1;
+		_acceptinput = true;
 	}
 
 	
