@@ -20,6 +20,7 @@ class Level
 	public var _radius : Float = 0;
 	
 	
+	
 	public function new() 
 	{
 		_shots = new FlxTypedGroup<Shot>();

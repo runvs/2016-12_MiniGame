@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import flixel.system.FlxSound;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 using MathExtender;
@@ -34,8 +35,15 @@ class Player extends FlxSprite
 	
 	public var _acceptinput : Bool = true;
 	
+	private var shootSound : FlxSound;
+	private var hitSound : FlxSound;
+	private var deathSound : FlxSound;
+
 	public var _lastangle : Float = 0;
+
+	public var _ammunition : Int = 15;
 	
+	public var _timeTilSpawn : Float = 0;
 	
 	public function new() 
 	{
@@ -59,7 +67,9 @@ class Player extends FlxSprite
 		_damageTrack = 0;
 		
 		
-		
+		shootSound = FlxG.sound.load(AssetPaths.shoot__wav);
+		hitSound = FlxG.sound.load(AssetPaths.hit__wav);
+		deathSound = FlxG.sound.load(AssetPaths.death__wav);
 	}
 	
 	public function setState ( state : PlayState, input : BasicInput, id: Int)
@@ -71,7 +81,7 @@ class Player extends FlxSprite
 		this.x += id * 100;
 
 		colorPlayer();
-		respawn();
+		respawn(true);
 	}
 	
 	function colorPlayer() 
@@ -95,6 +105,13 @@ class Player extends FlxSprite
 	
 	override public function update(elapsed:Float):Void 
 	{
+		if (this.color == FlxColor.GRAY)
+		{
+			if (_timeTilSpawn >= GP.PlayerSpawnProtectionTime)
+			{
+				color = FlxColor.WHITE;
+			}
+		}
 		
 		_collideCooldown -= elapsed;
 		if (_shootTimer > 0)
@@ -102,6 +119,7 @@ class Player extends FlxSprite
 			_shootTimer -= elapsed;
 		}
 		
+		_timeTilSpawn += elapsed;
 		
 		calculateElasticity();
 		
@@ -116,19 +134,17 @@ class Player extends FlxSprite
 			
 		}
 		
-		if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
+		if (_acceptinput)
 		{
-			this.animation.play("walk");
+			if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
+			{
+				this.animation.play("walk");
+			}
+			else
+			{
+				this.animation.play("idle");
+			}
 		}
-		else
-		{
-			this.animation.play("idle");
-		}
-		 
-		
-		
-		
-		//trace(this.acceleration);
 
 	}
 	
@@ -136,28 +152,35 @@ class Player extends FlxSprite
 	
 	function shoot() 
 	{
-		var s : Shot = new Shot();
-		
-		
-		s.x = x ;
-		
-		s.y = y;
-		
-		var xs : Float = _input.xShootVal.ClampPMSoft();
-		var ys : Float = _input.yShootVal.ClampPMSoft();
-		s.angle = Math.atan2(ys, xs).Rad2Deg();
-		
-		var l : Float = Math.sqrt(xs * xs + ys * ys);
-		
-		
-		s.velocity.x = GP.ShotVelocity * xs/l + velocity.x/2;
-		s.velocity.y = GP.ShotVelocity * ys/l + velocity.y/2; 
-		
-		s.colorMe(_ID);
+		if (_ammunition > 0)
+		{
+			_ammunition -= 1;
+			var s : Shot = new Shot();
+			
+			
+			s.x = x ;
+			
+			s.y = y;
+			
+			var xs : Float = _input.xShootVal.ClampPMSoft();
+			var ys : Float = _input.yShootVal.ClampPMSoft();
+			s.angle = Math.atan2(ys, xs).Rad2Deg();
+			
+			var l : Float = Math.sqrt(xs * xs + ys * ys);
+			
+			
+			s.velocity.x = GP.ShotVelocity * xs/l + velocity.x/2;
+			s.velocity.y = GP.ShotVelocity * ys/l + velocity.y/2; 
+			
+			s.colorMe(_ID);
 
-		_state.spawnShot(s);
-		this._shootTimer = GP.PlayerShootCoolDown * (1 - _damageTrack / 150);
-		if (this._shootTimer <= 0.1) _shootTimer = 0.1;
+			_state.spawnShot(s);
+			this._shootTimer = GP.PlayerShootCoolDown * (1 - _damageTrack / 150);
+			if (this._shootTimer <= 0.1) _shootTimer = 0.1;
+			shootSound.play();
+
+		}
+		
 	}
 	
 	function calculateElasticity() 
@@ -212,7 +235,6 @@ class Player extends FlxSprite
 			else
 			{
 				this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
-				
 			}
 		}
 		_lastangle = angle;
@@ -267,7 +289,10 @@ class Player extends FlxSprite
 	
 	public function die ()
 	{
+		deathSound.play();
 		_acceptinput = false;
+		
+		this.animation.play("hit", true);
 		
 		FlxTween.tween(this, { alpha: 0 }, 0.75);
 		FlxTween.tween(this.scale, { x: 0, y: 0 }, 0.75, { onComplete:
@@ -280,11 +305,21 @@ class Player extends FlxSprite
 		});
 	}
 	
-	public function respawn ()
+	public function respawn (first: Bool= false)
 	{
 		this.scale.set(1, 1);
 		this.alpha = 1;
-		this.setPosition(FlxG.width / 2 + 50 * Math.cos(_ID/4*Math.PI) , FlxG.height / 2+ 50 * Math.sin(_ID/4*Math.PI));
+		_timeTilSpawn = 0;
+		if (first)
+		{
+			this.setPosition(FlxG.width / 2 + 50 * Math.cos(_ID / 4 * Math.PI) , FlxG.height / 2 + 50 * Math.sin(_ID / 4 * Math.PI));
+			_timeTilSpawn = GP.PlayerSpawnProtectionTime;
+		}
+		else
+		{
+			this.setPosition(FlxG.width / 2 , FlxG.height / 2);
+			this.color = FlxColor.GRAY;			
+		}
 		_damageTrack = 0;
 		deaths += 1;
 		_acceptinput = true;
@@ -294,6 +329,7 @@ class Player extends FlxSprite
 	
 	public function hit (s: Shot)
 	{
+		hitSound.play();
 		_collideCooldown = 0.25;
 		
 		if (hitColorTween == null || hitColorTween.finished)
