@@ -34,6 +34,8 @@ class Player extends FlxSprite
 	
 	public var _acceptinput : Bool = true;
 	
+	public var _lastangle : Float = 0;
+	
 	
 	public function new() 
 	{
@@ -52,7 +54,7 @@ class Player extends FlxSprite
 		// movement stuff
 		this.drag.set(GP.PlayerDrag, GP.PlayerDrag);
 		this.maxVelocity.set(GP.PlayerMaxVelocity, GP.PlayerMaxVelocity);
-		this.elasticity = 0.0;
+		this.elasticity = 1.0;
 		
 		_damageTrack = 0;
 		
@@ -160,7 +162,7 @@ class Player extends FlxSprite
 	
 	function calculateElasticity() 
 	{
-		this.elasticity = 0.5 +  _damageTrack / 35;
+		this.elasticity = 1.0 +  _damageTrack / 35;
 	}
 	
 	function handleInputAndMovement(elapsed : Float):Void 
@@ -203,8 +205,17 @@ class Player extends FlxSprite
 		}
 		else
 		{
-			this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
+			if (velocity.y == 0 && velocity.x == 0)
+			{
+				this.angle = _lastangle;
+			}
+			else
+			{
+				this.angle = -90 + Math.atan2(velocity.y, velocity.x).Rad2Deg();
+				
+			}
 		}
+		_lastangle = angle;
 	
 		if (accsummedX > 3000) accsummedX = 3000;
 		if (accsummedX < -3000) accsummedX = -3000;

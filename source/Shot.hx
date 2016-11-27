@@ -18,9 +18,6 @@ class Shot extends FlxSprite
 	{
 		super();
 		loadGraphic(AssetPaths.gfx_char_shot__png, false, 64, 16, true);
-		
-		
-		
 	}
 	
 	
@@ -34,6 +31,8 @@ class Shot extends FlxSprite
 		if (f < 0 ) f = 0;
 		if ( f > 1) f = 1;
 		this.alpha =  0.75 + 0.25 * f;
+		
+		if (_t > 2) alive = false; 
 	}
 	public function colorMe(id:Int) 
 	{
