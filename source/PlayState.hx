@@ -125,21 +125,6 @@ class PlayState extends FlxState
 				{
 					p.die();
 				}
-				
-				//var onlevel : Bool = false;
-				//for (l in _level._pieces)
-				//{
-					//if (onlevel) continue;
-					//
-					//if (FlxG.pixelPerfectOverlap(p, l, 1))
-					//{
-						//onlevel = true;
-					//}
-				//}
-				//if (!onlevel)
-				//{
-					//p.die();
-				//}
 			}
 		}
 		
@@ -157,8 +142,10 @@ class PlayState extends FlxState
 		
 		for (p in _players)
 		{
+			if (p._timeTilSpawn <= GP.PlayerSpawnProtectionTime) continue;
 			for (s in _level._shots)
 			{
+				
 				if (s.alive == false) continue;
 				if (s.firedBy == p._ID) continue;
 				
