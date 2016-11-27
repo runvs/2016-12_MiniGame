@@ -201,8 +201,8 @@ class PlayState extends FlxState
 	
 	function playerhit(p1 : Player, p2 : Player) 
 	{
-		if (p1._acceptinput && p1._collideCooldown <= 0) p1.hit(null);
-		if (p2._acceptinput && p2._collideCooldown <= 0) p2.hit(null);
+		if (p1._acceptinput && p1._collideCooldown <= 0 && (p1._timeTilSpawn > GP.PlayerSpawnProtectionTime)) p1.hit(null);
+		if (p2._acceptinput && p2._collideCooldown <= 0 && (p2._timeTilSpawn > GP.PlayerSpawnProtectionTime)) p2.hit(null);
 	}
 	
 	
@@ -227,7 +227,15 @@ class PlayState extends FlxState
 		{
 			p.draw();
 		}
+		
+		for (c in _level._amminutionpacks)
+		{
+			c.draw();
+		}
+		
 		_level._shots.draw();
+		
+		
 		_gi.draw();
 		
 		_effects.draw();

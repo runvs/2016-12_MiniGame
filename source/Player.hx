@@ -277,11 +277,16 @@ class Player extends FlxSprite
 		
 		return this._damageTrack;
 	}
-	
+		
+	public function addAmmu()
+	{
+		_ammunition += 15;
+	}
 	
 	public function die ()
 	{
 		deathSound.play();
+		hitColorTween.cancel();
 		_acceptinput = false;
 		
 		this.animation.play("hit", true);
@@ -294,11 +299,7 @@ class Player extends FlxSprite
 		}
 		});
 	}
-	
-	public function addAmmu()
-	{
-		_ammunition += 15;
-	}
+
 	
 	public function respawn (first: Bool= false)
 	{
