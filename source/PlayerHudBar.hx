@@ -67,7 +67,7 @@ class PlayerHudBar extends HudBar
             }
             _damageCountText.color = _barColor;
             health = (1+_player._damageTrack%_barModulo)/_barModulo;
-            color = new FlxColor(_barColor);
+            //color = new FlxColor(_barColor);
             // update damage text
             _damageCountText.text = _player._damageTrack+"%";
             _lastDamage = _player._damageTrack;
@@ -95,6 +95,5 @@ class PlayerHudBar extends HudBar
         _damageCountText.draw();
         _bulletSymbol.draw();
         _bulletsText.draw();
-        //trace(_bulletsText);
     }
 }
