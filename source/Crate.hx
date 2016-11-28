@@ -27,7 +27,7 @@ class Crate extends FlxSprite
 	
 	public override function draw ()
 	{
-		trace("crate.draw");
+		//trace("crate.draw");
 		_glowoverlay.x = x + width/2;
 		_glowoverlay.y = y + height/2;
 		

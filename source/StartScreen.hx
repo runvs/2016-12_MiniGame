@@ -101,7 +101,7 @@ class StartScreen extends FlxState
 		add(_timerText);
 		
 		_infoText = new FlxText(10, 650, 800,
-	"Created for MiniGameJam in November 2016 by\nThomas Wellmann (graphics), Aldo Brießmann (code)\nStefan Wolf (code), Jonas (code)\nSimon Weis (code)", 
+	"Created for MiniGameJam in November 2016 by\nThomas Wellmann (graphics), Aldo Brießmann (code),\nStefan Wolf (code), Jonas (code) and Simon Weis (code)\nThe font 'jungle life' by dj urban mecha has been downloaded at dafont.com", 
 		8);
 		_infoText.color = FlxColor.GRAY;
 		//_infoText.font = "assets/data/MECHAG.TTF";
