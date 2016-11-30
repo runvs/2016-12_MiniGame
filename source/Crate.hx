@@ -14,14 +14,24 @@ class Crate extends FlxSprite
 {
 	var _glowoverlay : FlxSprite;
 	
+	public var _type : Bool  = false; // false means ammu, true means health
+	
 	public function new(?X:Float=0, ?Y:Float=0) 
 	{
 		super(X, Y);
-		
+		this.loadGraphic(AssetPaths.gfx_ammo__png, false, 32, 32);
 		_glowoverlay = new GlowOverlay(0, 0, FlxG.camera, Std.int(Math.max(this.width * 2, this.height * 2)), 1, 1);
-		_glowoverlay.color = FlxColor.fromRGB(133,193,255);
-		//_glowoverlay.blend = BlendMode.ADD;
-		//_glowoverlay.alpha = 0.5;
+		_type = FlxG.random.bool();
+		if (_type)
+		{
+			_glowoverlay.color = FlxColor.fromRGB(133, 193, 255);
+		}	
+		else 
+		{
+			_glowoverlay.color = FlxColor.fromRGB(255, 193, 133);
+		}
+		_glowoverlay.blend = BlendMode.ADD;
+		_glowoverlay.alpha = 0.5;
 	}
 	
 	

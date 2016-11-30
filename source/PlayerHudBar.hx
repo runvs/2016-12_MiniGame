@@ -53,7 +53,7 @@ class PlayerHudBar extends HudBar
     {
         // calculate damage level (= color of damage bar) if it changed
         //TODO tune this a bit
-        if (_lastDamage < _player._damageTrack || _player._damageTrack == 0)
+        if (_lastDamage != _player._damageTrack || _player._damageTrack == 0)
         {
 
             var _damageLevel : Int = Std.int((1.0-((_player._damageTrack/_barMaxDamage)%1.0))*0xFF);

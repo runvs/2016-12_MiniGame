@@ -314,6 +314,11 @@ class Player extends FlxSprite
 		
 		return this._damageTrack;
 	}
+	
+	public function heal()
+	{
+		_damageTrack *= 0.5;
+	}
 		
 	public function addAmmu()
 	{
