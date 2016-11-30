@@ -112,7 +112,10 @@ class PlayState extends FlxState
 			endGame();
 			for (p in _players)
 			{
-				p._damageTrack = 600;
+				if ( p._damageTrack < 600)
+				{
+					p._damageTrack = 600;
+				}
 			}
 		}
 		
