@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.text.FlxText;
+import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
 import flixel.math.FlxMath;
 /**
@@ -58,6 +59,10 @@ class EndGameState extends FlxState
         _winnerText.text = winText;
         _winnerText.alignment = "center";
         _winnerText.font = "assets/data/MECHAG.ttf";
+		_winnerText.alpha = 0;
+		_winnerText.scale.set(5, 5);
+		FlxTween.tween(_winnerText, { alpha : 1 }, 0.5);
+		FlxTween.tween(_winnerText.scale, { x: 1 , y : 1}, 0.5);
         add(_winnerText);
 
         for (i in 0... state._players.length) {
@@ -65,6 +70,7 @@ class EndGameState extends FlxState
             var t : FlxText = new FlxText(80 + i*192, 450, 200 - 16 , "", GP.fontSize(6) - 16);
             t.text = "Player: " + Std.string(p._ID);
             t.text += "\nDeaths: " + Std.string(p.deaths);
+			t.text += "\nShots Fired: " + Std.string(Std.int(p._shotsFired));
             t.text += "\nAvg. Damage: " + Std.string(Std.int(p.averageDamage));
             t.text += "\nMax. Damage: " + Std.string(p._highestDamage);
             t.text += "\nPickups: " + Std.string(p._numberOfPickUps);
@@ -72,6 +78,11 @@ class EndGameState extends FlxState
             t.color = GP.PCols.get(p._ID);
             
             t.font = "assets/data/MECHAG.ttf";
+			
+			t.alpha = 0;
+			FlxTween.tween(t, { alpha:1 }, 0.5, { startDelay: ((i+1) * 0.5+ 0.25) }  );
+			t.scale.set(5, 5);
+			FlxTween.tween(t.scale, { x:1, y:1 }, 0.5, { startDelay:((i+1) * 0.5 + 0.25)} );
             this.add(t);
              
         }

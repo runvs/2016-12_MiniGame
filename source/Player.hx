@@ -3,6 +3,7 @@ package;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxPoint;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.system.FlxSound;
 import flixel.tweens.FlxTween;
@@ -58,10 +59,13 @@ class Player extends FlxSprite
 	
 	public var _glowoverlay : FlxSprite;
 	
+	public var _hitTimer : Float = 0;
+	private var _lastHitVelocity : FlxPoint;
+	
 	public function new() 
 	{
 		super(FlxG.width/2, FlxG.height/2);
-		
+		_lastHitVelocity = new FlxPoint();
 		
 		/// graphic stuff 
 		this.loadGraphic(AssetPaths.gfx_char_sheet__png, true, 50, 45, true);
@@ -135,8 +139,6 @@ class Player extends FlxSprite
 	
 	override public function update(elapsed:Float):Void 
 	{
-		
-		
 		if (this.color == FlxColor.GRAY)
 		{
 			if (_timeTilSpawn >= GP.PlayerSpawnProtectionTime)
@@ -153,30 +155,36 @@ class Player extends FlxSprite
 		
 		_timeTilSpawn += elapsed;
 		
-		calculateElasticity();
+	
 		
 		if (_acceptinput)
 		{
 			handleInputAndMovement(elapsed);
+			
+			handleAnimations();
+			
+			if (_hitTimer  > 0)
+			{
+				_hitTimer -= elapsed;
+				if (_hitTimer >= 0.4)
+				{
+					_hitTimer = 0.4;
+				}
+			}
+			else
+			{
+				_hitTimer = 0;
+			}
+			calculateElasticity();
 		}
 		else
 		{
 			velocity.set();
 			acceleration.set();
 		}
+		super.update(elapsed);
 		
-		if (_acceptinput)
-		{
-			if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
-			{
-				this.animation.play("walk");
-			}
-			else
-			{
-				this.animation.play("idle");
-			}
-		}
-
+		accsummedX = accsummedY = 0;
 	}
 	
 
@@ -218,7 +226,24 @@ class Player extends FlxSprite
 	
 	function calculateElasticity() 
 	{
-		this.elasticity = 1.0 +  _damageTrack / 35;
+		//this.elasticity = 1.0 +  _damageTrack / 35 + _damageTrack / 2 * _hitTimer;
+		this.elasticity = 1.0 +  _damageTrack / 35;// + _damageTrack / 2 * _hitTimer;
+		
+		var dV : Float = GP.PlayerDrag * ( 1.0 - 2* _hitTimer);
+		this.drag.set(dV, dV);
+		
+		var f : Float = 5000;
+		this.acceleration.x += _lastHitVelocity.x * _hitTimer  * f;
+		this.acceleration.y += _lastHitVelocity.y * _hitTimer  * f;
+		this.velocity.x += _lastHitVelocity.x * _hitTimer * _hitTimer * f;
+		this.velocity.y += _lastHitVelocity.y * _hitTimer * _hitTimer * f;
+		
+		var mvV : Float = GP.PlayerMaxVelocity * ( 1 + 1000 * _hitTimer);
+		if (_hitTimer > 0)
+		{
+			trace(_lastHitVelocity.x * _hitTimer * _hitTimer * f);
+		}
+		//this.maxVelocity.set(mvV, mvV);
 	}
 	
 	function handleInputAndMovement(elapsed : Float):Void 
@@ -230,8 +255,8 @@ class Player extends FlxSprite
 		var ys : Float = _input.yShootVal.ClampPMSoft();
 	
 		
-		this.acceleration.x = _input.xVal * GP.PlayerAccelerationFactor;
-		this.acceleration.y = _input.yVal * GP.PlayerAccelerationFactor;
+		this.acceleration.x = (_input.xVal * GP.PlayerAccelerationFactor) * (1 - _hitTimer);
+		this.acceleration.y = (_input.yVal * GP.PlayerAccelerationFactor) * (1 - _hitTimer);
 		
 		var axs : Bool = acceleration.x > 0;
 		var ays : Bool = acceleration.y > 0;
@@ -239,8 +264,11 @@ class Player extends FlxSprite
 		var vxs : Bool = velocity.x > 0;
 		var vys : Bool = velocity.y > 0;
 		
-		if (axs != vxs) acceleration.x *= 4;
-		if (ays != vys) acceleration.y *= 4;
+		if (_hitTimer <= 0)
+		{
+			if (axs != vxs) acceleration.x *= 4;
+			if (ays != vys) acceleration.y *= 4;
+		}
 		
 		var velAbs : Float = Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
 		if ( velAbs > GP.PlayerMaxVelocity)
@@ -278,10 +306,18 @@ class Player extends FlxSprite
 		if (accsummedY < -3000) accsummedY = -3000;
 		velocity.x += accsummedX;
 		velocity.y += accsummedY;
-		
-		super.update(elapsed);
-		
-		accsummedX = accsummedY = 0;
+	}
+	
+	function handleAnimations():Void 
+	{
+		if (this.velocity.x * this.velocity.x +  this.velocity.y * this.velocity.y > 250)
+		{
+			this.animation.play("walk");
+		}
+		else
+		{
+			this.animation.play("idle");
+		}
 	}
 	
 	
@@ -335,6 +371,7 @@ class Player extends FlxSprite
 		
 		this.animation.play("hit", true);
 		
+		FlxTween.tween(this._glowoverlay, { alpha : 0 }, 0.75);
 		FlxTween.tween(this, { alpha: 0 }, 0.75);
 		FlxTween.tween(this.scale, { x: 0, y: 0 }, 0.75, { onComplete:
 		function(t)
@@ -349,6 +386,7 @@ class Player extends FlxSprite
 		_ammunition = 15;
 		this.scale.set(1, 1);
 		this.alpha = 1;
+		this._glowoverlay.alpha = 1;
 		_timeTilSpawn = 0;
 		if (first)
 		{
@@ -367,11 +405,13 @@ class Player extends FlxSprite
 
 	
 	
-	public function hit (s: Shot)
+	public function hit (dir:FlxPoint)
 	{
 		hitSound.pitch = FlxG.random.float(0.85, 1.15);
 		hitSound.play();
 		_collideCooldown = 0.25;
+		
+		_hitTimer = _damageTrack / 400.0;
 		
 		FlxG.camera.shake(0.005, 0.1);
 		
@@ -384,13 +424,13 @@ class Player extends FlxSprite
 			hitColorTween.cancel();
 			hitColorTween = FlxTween.color(this, 0.25, FlxColor.RED, FlxColor.WHITE);
 		}
-	
-		if (s != null)
-		{
-			//trace(s.velocity);
-			accsummedX = s.velocity.x * elasticity * 4;
-			accsummedY = s.velocity.y * elasticity * 4;
-		}
+
+		//trace(s.velocity);
+		var l : Float = Math.sqrt(dir.x * dir.x  + dir.y * dir.y);
+		accsummedX = dir.x/l * elasticity * 4;
+		accsummedY = dir.y/l * elasticity * 4;
+		_lastHitVelocity.set(dir.x/l, dir.y/l);
+
 		_damageTrack += GP.PlayerDamageTrackIncrease;
 	}
 	

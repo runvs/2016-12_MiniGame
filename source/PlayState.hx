@@ -7,6 +7,7 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.tweens.FlxTween;
 import flixel.ui.FlxButton;
@@ -52,7 +53,7 @@ class PlayState extends FlxState
 	
 	public function setTimer (t : Float )
 	{
-		_timer = GP.gameTime;
+		_timer = t;
 		FlxTween.color(_timerText, 10, FlxColor.WHITE, FlxColor.RED, { startDelay: _timer - 10 } );
 	}
 	
@@ -88,8 +89,8 @@ class PlayState extends FlxState
 		_timerPunchTimer.start(5, 
 		function (t) 
 		{
-			_timerText.scale.set(1.5, 1.5); 
-			var tw : FlxTween = FlxTween.tween(_timerText.scale, { x:1, y:1 }, 1); 
+			_timerText.scale.set(2, 2); 
+			var tw : FlxTween = FlxTween.tween(_timerText.scale, { x:1, y:1 }, 0.25); 
 			//var cl : FlxTween.color(_timerText, 0.5, FlxColor.GRAY, FlxColor.WHITE);
 		} 
 		, 0);
@@ -186,7 +187,7 @@ class PlayState extends FlxState
 				
 				if ( FlxG.overlap(p, s))
 				{
-					p.hit(s);
+					p.hit(s.velocity);
 					FlxObject.separate(p, s);
 					s.alive = false;
 					spawnHit(s);
@@ -219,6 +220,11 @@ class PlayState extends FlxState
 		for (i in 0 ... _players.length)
 		{
 			var p : Player = _players.members[i];
+			if (!p._acceptinput)
+			{
+				p._glowoverlay.alpha = 0;
+			}
+			
 			p._glowoverlay.alpha = (i == idx|| _players.members[i].deaths == _players.members[idx].deaths) ? 0.8 : 0.0;
 		}
 	}
@@ -237,8 +243,11 @@ class PlayState extends FlxState
 	
 	function playerhit(p1 : Player, p2 : Player) 
 	{
-		if (p1._acceptinput && p1._collideCooldown <= 0 && (p1._timeTilSpawn > GP.PlayerSpawnProtectionTime)) p1.hit(null);
-		if (p2._acceptinput && p2._collideCooldown <= 0 && (p2._timeTilSpawn > GP.PlayerSpawnProtectionTime)) p2.hit(null);
+		var dir : FlxPoint = new FlxPoint(p2.x - p1.x, p2.y - p1.y);
+		dir.set( -dir.x, -dir.y);
+		if (p1._acceptinput && p1._collideCooldown <= 0 && (p1._timeTilSpawn > GP.PlayerSpawnProtectionTime)) p1.hit(dir);
+		dir.set( -dir.x, -dir.y);
+		if (p2._acceptinput && p2._collideCooldown <= 0 && (p2._timeTilSpawn > GP.PlayerSpawnProtectionTime)) p2.hit(dir);
 	}
 	
 	
