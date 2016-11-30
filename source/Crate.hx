@@ -24,11 +24,11 @@ class Crate extends FlxSprite
 		_type = FlxG.random.bool();
 		if (_type)
 		{
-			_glowoverlay.color = FlxColor.fromRGB(133, 193, 255);
+			_glowoverlay.color = FlxColor.fromRGB(90, 100, 255);
 		}	
 		else 
 		{
-			_glowoverlay.color = FlxColor.fromRGB(255, 193, 133);
+			_glowoverlay.color = FlxColor.fromRGB(255, 100, 90);
 		}
 		_glowoverlay.blend = BlendMode.ADD;
 		_glowoverlay.alpha = 0.5;
