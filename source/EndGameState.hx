@@ -61,7 +61,7 @@ class EndGameState extends FlxState
         _winnerText.font = "assets/data/MECHAG.ttf";
 		_winnerText.alpha = 0;
 		_winnerText.scale.set(5, 5);
-		FlxTween.tween(_winnerText, { alpha : 1 }, 0.5);
+		FlxTween.tween(_winnerText, { alpha : 1 }, 0.5, { onComplete : function(t){FlxG.camera.shake(0.005, 0.1);} }  );
 		FlxTween.tween(_winnerText.scale, { x: 1 , y : 1}, 0.5);
         add(_winnerText);
 
@@ -80,7 +80,7 @@ class EndGameState extends FlxState
             t.font = "assets/data/MECHAG.ttf";
 			
 			t.alpha = 0;
-			FlxTween.tween(t, { alpha:1 }, 0.5, { startDelay: ((i+1) * 0.5+ 0.25) }  );
+			FlxTween.tween(t, { alpha:1 }, 0.5, { startDelay: ((i+1) * 0.5+ 0.25), onComplete : function(t){FlxG.camera.shake(0.005, 0.1);} }  );
 			t.scale.set(5, 5);
 			FlxTween.tween(t.scale, { x:1, y:1 }, 0.5, { startDelay:((i+1) * 0.5 + 0.25)} );
             this.add(t);

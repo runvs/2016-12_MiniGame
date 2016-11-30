@@ -61,6 +61,8 @@ class Player extends FlxSprite
 	
 	public var _hitTimer : Float = 0;
 	private var _lastHitVelocity : FlxPoint;
+
+	public var _outInSuddenDeath : Bool = false;
 	
 	public function new() 
 	{
@@ -139,6 +141,9 @@ class Player extends FlxSprite
 	
 	override public function update(elapsed:Float):Void 
 	{
+		// call nothing if suddendeath
+		if (_outInSuddenDeath) return;
+		
 		if (this.color == FlxColor.GRAY)
 		{
 			if (_timeTilSpawn >= GP.PlayerSpawnProtectionTime)
@@ -241,7 +246,7 @@ class Player extends FlxSprite
 		var mvV : Float = GP.PlayerMaxVelocity * ( 1 + 1000 * _hitTimer);
 		if (_hitTimer > 0)
 		{
-			trace(_lastHitVelocity.x * _hitTimer * _hitTimer * f);
+			//trace(_lastHitVelocity.x * _hitTimer * _hitTimer * f);
 		}
 		//this.maxVelocity.set(mvV, mvV);
 	}
@@ -318,37 +323,6 @@ class Player extends FlxSprite
 		{
 			this.animation.play("idle");
 		}
-	}
-	
-	
-	
-	public function getDamageTrack()
-	{
-		var s : Shot = new Shot();
-        // dimensions of the shot : x = 64; y = 16
-        s.offset.y = s.height/2;
-        s.offset.x = s.width/2;
-        
-        trace(this.angle);
-		s.x = x + (this.width/2) + (this.width/2) * 0;
-		s.y = y + (this.height/2) - (this.height/2)  * 0;
-		
-		var xs : Float = _input.xShootVal.ClampPMSoft();
-		var ys : Float = _input.yShootVal.ClampPMSoft();
-		s.angle = Math.atan2(ys, xs).Rad2Deg();
-		
-		var l : Float = Math.sqrt(xs * xs + ys * ys);
-		
-		s.velocity.x = GP.ShotVelocity * xs/l;
-		s.velocity.y = GP.ShotVelocity * ys/l;
-
-		s.colorMe(_ID);
-		
-		
-		_state.spawnShot(s);
-		this._shootTimer = GP.PlayerShootCoolDown;
-		
-		return this._damageTrack;
 	}
 	
 	public function heal()
@@ -436,11 +410,11 @@ class Player extends FlxSprite
 	
 	override public function draw():Void 
 	{
+		if (_outInSuddenDeath) return;
 		_glowoverlay.x = x + width/2;
 		_glowoverlay.y = y + height/2;
 		_glowoverlay.draw();
 		super.draw();
 		
 	}
-	
 }

@@ -38,5 +38,4 @@ class GP
 	static public var PlayerDamageTrackIncrease ( default, null) : Float = 4;
 	static public var ShotVelocity (default, null) : Float =  550;
 	static public var PlayerSpawnProtectionTime (default, null) : Float = 2;
-	
 }

@@ -53,7 +53,7 @@ class StartScreen extends FlxState
             _playerTexts[player].alignment = "center";
         }
 
-        trace('$_playerTexts[0]');
+        //trace('$_playerTexts[0]');
 		FlxG.mouse.visible = false;
         
         input = new Array<BasicInput>();

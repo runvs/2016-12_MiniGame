@@ -28,7 +28,7 @@ class PlayState extends FlxState
 	
 	private var _effects : FlxSpriteGroup;
 	
-	private var _timer : Float = 120;
+	private var _timer : Float = GP.gameTime;
 	private var _timerText : FlxText;
 	private var _timerPunchTimer : FlxTimer;
 	
@@ -38,6 +38,7 @@ class PlayState extends FlxState
 	
 	private var _lifeTime : Float = 0;
 	
+	private var _enteredSuddenDeath : Bool = false;
 	
 	public function new ()
 	{
@@ -48,7 +49,6 @@ class PlayState extends FlxState
 	public function addPlayer(name : String)
 	{
 		_startPlayers.push(name);
-
 	}
 	
 	public function setTimer (t : Float )
@@ -60,8 +60,6 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		super.create();
-		
-		
 		
 		_effects = new FlxSpriteGroup();
 		
@@ -110,7 +108,12 @@ class PlayState extends FlxState
 		
 		if (_timer <= 0)
 		{
+			_timerPunchTimer.cancel();
 			endGame();
+			for (p in _players)
+			{
+				p._damageTrack = 600;
+			}
 		}
 		
 		checkBestPlayer();
@@ -120,13 +123,13 @@ class PlayState extends FlxState
 		
 		for (p in _players)
 		{
+			if (p._outInSuddenDeath) continue;
 			if (p._acceptinput)
 			{
 				
 				var dx = FlxG.width / 2 - (p.x + p.width/2) ;
 				var dy = FlxG.height/ 2 - (p.y + p.height/2) ;
 				var r : Float = dx*dx + dy*dy;
-				//trace(_level._radius);
 				if (r > _level._radius * _level._radius)
 				{
 					p.die();
@@ -137,11 +140,10 @@ class PlayState extends FlxState
 		
 		
 		if (_inputEnabled)
-		{
-			//FlxG.camera.angle = 2.5 * Math.sin( _lifeTime / Math.PI / 3);
-			
+		{			
 			for (p in _players)
 			{
+				if (p._outInSuddenDeath) continue;
 				p.update(elapsed);
 			}
 			_level._shots.update(elapsed);
@@ -163,6 +165,7 @@ class PlayState extends FlxState
 		
 		for (p in _players)
 		{
+			if (p._outInSuddenDeath) continue;
 			for (crate in _level._amminutionpacks)
 			{
 				if (FlxG.overlap(p, crate))
@@ -194,13 +197,21 @@ class PlayState extends FlxState
 				}
 			}
 		}
+		
 		_gi.update(elapsed);
 		_effects.update(elapsed);
 		_timerText.update(elapsed);
 		
 		var dec: Int = Std.int((_timer * 10) % 10);
 		if (dec < 0) dec *= -1;
-		_timerText.text = Std.string(Std.int(_timer) + "." + Std.string(dec));
+		if (_timer > 0)
+		{
+			_timerText.text = Std.string(Std.int(_timer) + "." + Std.string(dec));
+		}
+		else if (checkIfDraw())
+		{
+			_timerText.text = "Sudden Death";
+		}
 	}
 	
 	function checkBestPlayer() 
@@ -250,15 +261,108 @@ class PlayState extends FlxState
 		if (p2._acceptinput && p2._collideCooldown <= 0 && (p2._timeTilSpawn > GP.PlayerSpawnProtectionTime)) p2.hit(dir);
 	}
 	
-	
-	function endGame() 
+	function switchToEndScreen()
 	{
-		
 		_inputEnabled = false;
 		FlxG.camera.fade(FlxColor.BLACK, 1.0, false, function(){DoEndGame();});
 	}
 	
-		function DoEndGame():Void 
+	
+	function checkIfDraw() : Bool
+	{
+		var minDeaths : Int = 5000;
+		var isDraw : Bool = false;
+		for (i in 0 ... _players.length)
+		{
+			var p : Player = _players.members[i];
+			if (p.deaths < minDeaths)
+			{
+				isDraw = false;
+				minDeaths = p.deaths;
+			}
+			else if (p.deaths == minDeaths)
+			{
+				isDraw = true;
+			}
+		}
+		return isDraw;
+	}
+	
+	function getMinimumDeaths () : Int 
+	{
+		var minDeaths : Int = 50000;
+		for (i in 0 ... _players.length)
+		{
+			var p : Player = _players.members[i];
+			if (p.deaths < minDeaths)
+			{
+				minDeaths = p.deaths;
+			}
+		}
+		//trace("mindeaths: " + minDeaths);
+		return minDeaths;
+	}
+	
+	function disablePlayersWithMoreDeaths ( d : Int)
+	{
+		for (i in 0 ... _players.length)
+		{
+			var p : Player = _players.members[i];
+			if (p._outInSuddenDeath) continue;
+			if (p.deaths > d)
+			{
+				p._outInSuddenDeath = true;
+				p.x = -5000;
+				p.y = -5000;
+			}
+		}
+	}
+	
+	function checkEndOfSuddendeath() : Bool
+	{
+		var numberOfPlayersWithMinDeatsh : Int = 0; 
+		for (i in 0 ... _players.length)
+		{
+			var p : Player = _players.members[i];
+			if (p._outInSuddenDeath) continue;
+			
+			if (p.deaths == getMinimumDeaths())
+			{
+				numberOfPlayersWithMinDeatsh += 1;
+			}
+		}
+		return (numberOfPlayersWithMinDeatsh <= 1);
+	
+	
+	}
+	
+	function endGame() 
+	{	
+		
+		
+		if (!checkIfDraw())
+		{
+			switchToEndScreen();
+		}
+		else
+		{
+			if (!_enteredSuddenDeath)
+			{
+				_enteredSuddenDeath = true;
+				
+				_timerText.scale.set(2, 2);
+				FlxTween.tween(_timerText.scale, { x: 3, y:3 }, 0.75, { type : FlxTween.LOOPING } );
+				_timerText.color = FlxColor.RED;
+			}
+			disablePlayersWithMoreDeaths(getMinimumDeaths());
+			if (checkEndOfSuddendeath())
+			{
+				switchToEndScreen();
+			}
+		}
+	}
+	
+	function DoEndGame():Void 
 	{
 		var e : EndGameState = new EndGameState(this);
 		FlxG.switchState(e);
