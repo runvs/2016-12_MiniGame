@@ -21,15 +21,12 @@ class StartScreen extends FlxState
 	private var _timerText : FlxText; 
 	private var _timer : Float = 120;
 	
-    
-    // the next player to join
-    private var nextToJoin : Int  = 0;
-    private var refractory : Float = 0;
     private var alreadyJoined : Array<Bool> = new Array<Bool>();
-	//private var arr : Array<Int> = new Array<Int>();
-	//private var map : Map<Int, String> = new Map<Int,String>();
-	//
-	
+
+    // for keyboards without numpad: keeps track of wether the user choose the shittyinputmode by pressing ENTER
+    private var shittyInput : Array<BasicInput>;
+    private var _shittyInputMode : Bool = false;
+    private var _inputModeIndication : FlxText; 
 	private var _infoText : FlxText;
 	
 	public function getNumberOfPlayersJoined() : Int
@@ -57,8 +54,15 @@ class StartScreen extends FlxState
 		FlxG.mouse.visible = false;
         
         input = new Array<BasicInput>();
+        // for laptops without numpad: if shittyInputMode is true, change the InputKeyboard instances to InputShittyKeyboard instances
+        // (which are stored in the shittyInput array)
+        shittyInput = new Array<BasicInput>();
+
         input.push(new InputKeyboard1());
         input.push(new InputKeyboard2());
+        shittyInput.push(new InputShittyKeyboard1());
+        shittyInput.push(new InputShittyKeyboard2());
+
         for (i in 0 ... 4) {
             input.push(new GPInput(i));
         }
@@ -82,7 +86,6 @@ class StartScreen extends FlxState
         _gameSubtitle.font = "assets/data/MECHAG.TTF";
          add(_gameTitle);
          add(_gameSubtitle);
-        
          
          for (player in _playerTexts) {
             add(player);
@@ -106,6 +109,13 @@ class StartScreen extends FlxState
 		_infoText.color = FlxColor.GRAY;
 		//_infoText.font = "assets/data/MECHAG.TTF";
 		add(_infoText);
+        
+        // displays the input mode (shitty or normal)
+        _inputModeIndication = new FlxText(10, 10, FlxG.width, "", 7);
+        _inputModeIndication.alignment = "left";
+        _inputModeIndication.color = FlxColor.GRAY;
+        
+        add(_inputModeIndication);
     
      if (FlxG.sound.music == null)  {
         FlxG.sound.playMusic("assets/music/Videogame2.wav", 1, true);
@@ -117,35 +127,59 @@ class StartScreen extends FlxState
 	   super.update(elapsed);
         t += elapsed * 8;
 		
-		_timerText.text = "Game Time: " + Std.string(Std.int(_timer)) + " [PgnUp], [PgnDwn]";
+		_timerText.text = "Game Time: " + Std.string(Std.int(_timer)) + (!_shittyInputMode ? " inc: [PgnUp], dec: [PgnDwn]" : " inc: [1],  dec: [2]");
 		
-		if (FlxG.keys.justPressed.PAGEUP)
+		if (FlxG.keys.justPressed.PAGEUP || FlxG.keys.justPressed.ONE)
 		{
 			_timer += 5;
 			if (_timer >= 600) _timer = 600;
 		}
-		if (FlxG.keys.justPressed.PAGEDOWN)
+		if (FlxG.keys.justPressed.PAGEDOWN || FlxG.keys.justPressed.TWO)
 		{
 			_timer -= 5;
 			if (_timer <= 30) _timer = 30;
 		}
 		
 		
-       // nice shiat
        _gameSubtitle.size = Std.int(GP.fontSize(6) - 4 * Math.sin(t));
-        
+
+        // enable shitty input mode
+        if (FlxG.keys.justPressed.ENTER) { //&& getNumberOfPlayersJoined() == 0) {
+            _shittyInputMode = !_shittyInputMode;
+        }       
+        // handle shitty input mode
+        if (_shittyInputMode) {
+            _inputModeIndication.text = "Slightly shitty Keyboard Controls:\n(p1) move: arrows, shoot: space\n(p2) move: wasd, shoot: shift\n(press Enter to toggle)";
+            // only the first two objects of input (the keyboardInput instances) are affected by shitty input mode
+            if (alreadyJoined[0]) {
+                input[0] = new InputShittyKeyboard1();//shittyInput[0];
+            }
+            if (alreadyJoined[1]) {
+                 input[1] = new InputShittyKeyboard2();//shittyInput[1];
+            }
+
+        } else {
+            _inputModeIndication.text = "Normal Keyboard Controls:\n(p1) move: arrows; shoot: numpad\n(p2) move : wasd; shoot: ijkl\n(press Enter to toggle)";
+            if (alreadyJoined[0]) {
+                input[0] = new InputKeyboard1();
+            }
+            if (alreadyJoined[1]) {
+                input[1] = new InputKeyboard2();
+            }
+        }
+     
+
         for (i in 0 ... input.length) {
             input[i].update(elapsed);
-            if (alreadyJoined[i] == true) {
-                continue;
-            }
-            if (input[i].anyPressed) {
-                //var formatJoined : FxtTextFormat = new FxtFormat();
-                _playerTexts[nextToJoin].text = input[i].name + " joined";
-                nextToJoin += 1;
+            if (alreadyJoined[i]) {
+                 _playerTexts[i].text = input[i].name + " joined";
+                    
+            } else if (input[i].anyPressed) {
                 alreadyJoined[i] = true;
             }
         }
+
+
 		if (FlxG.keys.pressed.SPACE)
 		{
 			if (getNumberOfPlayersJoined() >= 2)

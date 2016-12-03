@@ -11,6 +11,8 @@ class String2BasicInput
 	{
 		if (name == "wasd") return new InputKeyboard1();
 		else if (name == "arrows") return new InputKeyboard2();
+        else if (name == "wasd-shitty") return new InputShittyKeyboard1();
+        else if (name == "arrows-shitty") return new InputShittyKeyboard2();
 		else if (name == "gp 0") return new GPInput(0);
 		else if (name == "gp 1") return new GPInput(1);
 		else if (name == "gp 2") return new GPInput(2);
