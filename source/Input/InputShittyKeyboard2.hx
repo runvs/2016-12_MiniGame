@@ -62,7 +62,7 @@ class InputShittyKeyboard2 extends BasicInput
             }
 		}
 		// in case the player doesn't move, we have to use the previous x/yVals for the new shootVal
-        if (FlxG.keys.pressed.SHIFT && !FlxG.keys.pressed.UP
+        if (FlxG.keys.pressed.SPACE&& !FlxG.keys.pressed.UP
             && !FlxG.keys.pressed.LEFT && !FlxG.keys.pressed.RIGHT && !FlxG.keys.pressed.DOWN){ 
             xShootVal = this.previousXVal;
             yShootVal = this.previousYVal;
