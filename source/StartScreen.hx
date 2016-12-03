@@ -149,7 +149,7 @@ class StartScreen extends FlxState
         }       
         // handle shitty input mode
         if (_shittyInputMode) {
-            _inputModeIndication.text = "Slightly shitty Keyboard Controls:\n(p1) move: arrows, shoot: space\n(p2) movep2: wasd, shootp2: shift\n(press Enter to toggle)";
+            _inputModeIndication.text = "Slightly shitty Keyboard Controls:\n(p1) move: arrows, shoot: space\n(p2) move: wasd, shoot: shift\n(press Enter to toggle)";
             // only the first two objects of input (the keyboardInput instances) are affected by shitty input mode
             if (alreadyJoined[0]) {
                 input[0] = new InputShittyKeyboard1();//shittyInput[0];
