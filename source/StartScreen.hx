@@ -119,6 +119,8 @@ class StartScreen extends FlxState
 
         if (FlxG.sound.music == null)  {
             FlxG.sound.playMusic("assets/music/Videogame2.wav", 1, true);
+            // workaround for mute bug (if you mute by pressing -, you cannot unmute on mac due to stuff)
+            FlxG.sound.volume = 1;
         }
     }
 
@@ -127,20 +129,19 @@ class StartScreen extends FlxState
         super.update(elapsed);
         t += elapsed * 8;
 
-        _timerText.text = "Game Time: " + Std.string(Std.int(_timer)) + (!_shittyInputMode ? " inc: [PgnUp], dec: [PgnDwn]" : " inc: [1],  dec: [2]");
+        _timerText.text = "Game Time: " + Std.string(Std.int(_timer)) + (!_shittyInputMode ? " inc: [PgnUp], dec: [PgnDwn]" : " inc: [2],  dec: [3]");
     
 
-        if (FlxG.keys.justPressed.PAGEUP || FlxG.keys.justPressed.ONE)
+        if (FlxG.keys.justPressed.PAGEUP || FlxG.keys.justPressed.TWO)
         {
             _timer += 5;
             if (_timer >= 600) _timer = 600;
         }
-        if (FlxG.keys.justPressed.PAGEDOWN || FlxG.keys.justPressed.TWO)
+        if (FlxG.keys.justPressed.PAGEDOWN || FlxG.keys.justPressed.THREE)
         {
             _timer -= 5;
             if (_timer <= 30) _timer = 30;
         }
-
 
         _gameSubtitle.size = Std.int(GP.fontSize(6) - 4 * Math.sin(t));
 
@@ -160,7 +161,7 @@ class StartScreen extends FlxState
             }
 
         } else {
-            _inputModeIndication.text = "Normal Keyboard Controls:\n(p1) move: arrows; shoot: numpad\n(p2) move : wasd; shoot: ijkl\n(press Enter to toggle)";
+            _inputModeIndication.text = "Normal Keyboard Controls:\n(p1) move: arrows, shoot: numpad\n(p2) move: wasd, shoot: ijkl\n(press Enter to toggle)";
             if (alreadyJoined[0]) {
                 input[0] = new InputKeyboard1();
             }
