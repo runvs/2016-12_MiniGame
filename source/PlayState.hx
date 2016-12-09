@@ -78,7 +78,7 @@ class PlayState extends FlxState
 		_level = new Level();
 		
         _timerText = new FlxText(0, 0, FlxG.width, "", 28);
-        _timerText.font = "assets/data/MECHAG.ttf";
+        _timerText.font = "assets/data/MECHAG.TTF";
 		_timerText.alignment = FlxTextAlign.CENTER;
 		_timerText.screenCenter(FlxAxes.X);
 		_timerText.y = 16;

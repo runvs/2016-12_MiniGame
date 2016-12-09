@@ -23,23 +23,24 @@ class EndGameState extends FlxState
         this.state = state; 
         super();
     }
-	public override function create() : Void 
 
+    public override function create() : Void 
 	{
         _gameOverText  = new FlxText(0, FlxG.height / 6, FlxG.width, "game over!", GP.fontSize(3));
         _gameOverText.alignment = "center";
-        _gameOverText.font = "assets/data/MECHAG.ttf";
-        
+        _gameOverText.font = "assets/data/MECHAG.TTF";
         var _gameOverTextFormat : FlxTextFormat = new FlxTextFormat(0xD81B60);
         _gameOverText.addFormat(_gameOverTextFormat);
+        trace(_gameOverText.text);
        
         _gameOverSubtitle = new FlxText(0, GP.fontSize(2)*2.3, GP.ScreenWidth, "press space to restart", GP.fontSize(7));
         var subtitleFormat : FlxTextFormat = new FlxTextFormat(0x00bcd4);
 
         _gameOverSubtitle = _gameOverSubtitle.addFormat(subtitleFormat, 6, 11 );
-        _gameOverSubtitle.font = "assets/data/MECHAG.ttf";
+        _gameOverSubtitle.font = "assets/data/MECHAG.TTF";
         _gameOverSubtitle.alignment = "center";
         
+        trace(_gameOverSubtitle.text);
         var playerTexts : Array<FlxText> = new Array<FlxText>();
         var lowestDeaths : Int = 0xabc;
         
@@ -58,7 +59,7 @@ class EndGameState extends FlxState
         }
         _winnerText.text = winText;
         _winnerText.alignment = "center";
-        _winnerText.font = "assets/data/MECHAG.ttf";
+        _winnerText.font = "assets/data/MECHAG.TTF";
 		_winnerText.alpha = 0;
 		_winnerText.scale.set(5, 5);
 		FlxTween.tween(_winnerText, { alpha : 1 }, 0.5, { onComplete : function(t){FlxG.camera.shake(0.005, 0.1);} }  );
@@ -77,7 +78,7 @@ class EndGameState extends FlxState
 
             t.color = GP.PCols.get(p._ID);
             
-            t.font = "assets/data/MECHAG.ttf";
+            t.font = "assets/data/MECHAG.TTF";
 			
 			t.alpha = 0;
 			FlxTween.tween(t, { alpha:1 }, 0.5, { startDelay: ((i+1) * 0.5+ 0.25), onComplete : function(t){FlxG.camera.shake(0.005, 0.1);} }  );
@@ -88,20 +89,16 @@ class EndGameState extends FlxState
         }
         add(_gameOverText);
         add(_gameOverSubtitle);
-
-		super.create();
+        super.create();
 	}
 	
 	public override function update (elapsed : Float ) : Void 
 	{
         t += elapsed *8;
         _gameOverSubtitle.size = Std.int(GP.fontSize(6) - 4 * Math.sin(t));
-
         if (FlxG.keys.pressed.SPACE) {
 		    FlxG.switchState(new StartScreen());
         }
-
-         
     }
 	
 }
